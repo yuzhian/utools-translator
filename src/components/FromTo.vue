@@ -1,6 +1,6 @@
 <template>
   <input :value="props.from" type="text" @input="($event: any) => emit('update:from', $event.target.value)" />
-  <div style="display: inline-block; margin: 0 0.25rem; cursor: pointer" @click="handleExchange">↔</div>
+  <div class="inline-block mx-1 cursor-pointer select-none" @click="handleExchange">↔</div>
   <input :value="props.to" type="text" @input="($event: any) => emit('update:to', $event.target.value)" />
 </template>
 

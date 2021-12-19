@@ -1,5 +1,5 @@
 <template>
-  <textarea ref="input" v-model="src" :rows="10" style="width: 100%" />
+  <textarea ref="input" v-model="src" :rows="10" class="w-full" />
   <FromTo v-model:from="trans.from" v-model:to="trans.to" />
   <div>{{ dst }}</div>
 </template>

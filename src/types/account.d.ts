@@ -4,5 +4,5 @@ type Account = {
 }
 
 type Accounts = {
-  [key: string]: Account
+  baidu: Account
 }
