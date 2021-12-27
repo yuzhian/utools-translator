@@ -1,38 +1,34 @@
 <template>
-  <vue-final-modal v-model="visible" classes="flex justify-center items-center" content-class="relative h-3/4 w-5/6 p-4 overflow-auto bg-white">
-    <!-- 配置项主体 -->
-    <div class="w-full h-[calc(100%-2rem)] overflow-auto">
-      <div v-for="(v, k) in accounts">
-        <div>{{ k }}</div>
-        <div class="grid grid-cols-2 gap-2">
-          <input v-model="accounts[k]['appid']" type="text" class="w-full" />
-          <input v-model="accounts[k]['secret']" type="text" class="w-full" />
-        </div>
+  <a-modal v-model:visible="visible" title="设置" @cancel="changeVisible(false)" @ok="saveAccounts">
+    <div v-for="(v, k) in accounts" :key="k">
+      <div>{{ k }}</div>
+      <div class="grid grid-cols-2 gap-2">
+        <input v-model="accounts[k]['appid']" placeholder="请输入应用ID" type="text" />
+        <input v-model="accounts[k]['secret']" placeholder="请输入密钥" type="password" />
       </div>
     </div>
-    <div class="flex justify-center items-center h-7">
-      <button class="mx-1" @click="changeVisible(false)">取消</button>
-      <button class="mx-1" @click="saveAll()">保存</button>
-    </div>
-  </vue-final-modal>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-
+import { ref } from 'vue'
+import cloneDeep from 'lodash/cloneDeep'
 import store from '/src/store'
+import { message } from 'ant-design-vue'
 
-const accounts = reactive({
-  ...JSON.parse(JSON.stringify(store.getters.accounts())),
-})
-
-const saveAll = () => {
-  store.commit('setAccounts', accounts)
+const accounts = ref()
+const loadAccounts = () => {
+  accounts.value = cloneDeep(store.getters.accounts())
+}
+const saveAccounts = () => {
+  store.commit('setAccounts', accounts.value)
+  message.success('已保存')
   changeVisible(false)
 }
 
 const visible = ref<boolean>(false)
 const changeVisible = (val: boolean) => {
+  val && loadAccounts()
   visible.value = val
 }
 

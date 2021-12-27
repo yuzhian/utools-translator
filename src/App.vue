@@ -1,17 +1,20 @@
 <template>
   <main class="p-1">
-    <Translator :fn="baiduTranslate" />
-    <AppConfigModal ref="appConfigModal" />
-    <button class="fixed bottom-2 left-2" @click="appConfigModal.changeVisible(true)">设置</button>
+    <a-config-provider :locale="zhCN">
+      <Translator :fn="baiduTranslate" />
+      <AppConfigModal ref="appConfigModal" />
+      <button class="fixed bottom-2 left-2" @click="appConfigModal.changeVisible(true)">设置</button>
+    </a-config-provider>
   </main>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import baiduTranslate from './utils/translator/baidu'
+import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import Translator from '/src/components/Translator.vue'
 import AppConfigModal from '/src/components/AppConfigModal.vue'
+import baiduTranslate from '/src/plugins/translator/baidu'
 
 const appConfigModal = ref()
 </script>

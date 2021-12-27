@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch, onMounted } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import FromTo from '/src/components/FromTo.vue'
 
 const props = defineProps({
@@ -15,8 +15,8 @@ const props = defineProps({
 const src = ref<string>('') // 原文
 const dst = ref<string>('') // 译文
 const trans = reactive({
-  from: 'zh',
-  to: 'en',
+  from: 'auto',
+  to: 'auto',
 })
 
 // 防抖
@@ -40,16 +40,15 @@ watch([src, trans], () => {
   })
 })
 
-// 加载后聚焦
+// 聚焦输入框
 const input = ref()
-onMounted(() => {
-  input.value.focus()
-})
+const focusInput = () => input?.value?.focus()
 
 // utools api, 本插件被调用时的回调, 用于初始化原文值. see https://u.tools/docs/developer/api.html#onpluginenter-callback
 if (window.utools) {
   window.utools.onPluginEnter(({ payload }) => {
     src.value = payload
+    focusInput()
   })
 }
 </script>
