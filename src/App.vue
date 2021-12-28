@@ -1,5 +1,5 @@
 <template>
-  <main class="p-1">
+  <main w="screen" h="screen" p="1" bg="gray-100">
     <a-config-provider :locale="zhCN">
       <Translator :fn="baiduTranslate" />
       <AppConfigModal ref="appConfigModal" />
