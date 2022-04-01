@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import WindiCSS from 'vite-plugin-windicss'
 import Components from 'unplugin-vue-components/vite'
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
-import styleImport, { AndDesignVueResolve } from 'vite-plugin-style-import'
+import { createStyleImportPlugin, AndDesignVueResolve } from 'vite-plugin-style-import'
 
 export default defineConfig({
   base: './',
@@ -13,8 +13,17 @@ export default defineConfig({
     Components({
       resolvers: [AntDesignVueResolver()],
     }),
-    styleImport({
+    createStyleImportPlugin({
       resolves: [AndDesignVueResolve()],
+      libs: [
+        {
+          libraryName: 'ant-design-vue',
+          esModule: true,
+          resolveStyle: name => {
+            return `ant-design-vue/es/${name}/style/index`
+          },
+        },
+      ],
     }),
   ],
   css: {

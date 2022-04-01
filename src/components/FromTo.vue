@@ -1,9 +1,9 @@
 <template>
-  <select :value="props.from" @input="($event: any) => emit('update:from', $event.target.value)">
+  <select :value="props.from" @input="event => emit('update:from', event.target.value)">
     <option v-for="{ label, value } of langs" :key="value" :value="value">{{ label }}</option>
   </select>
   <div class="inline-block mx-1 cursor-pointer select-none" @click="handleExchange">↔</div>
-  <select :value="props.to" @input="($event: any) => emit('update:to', $event.target.value)">
+  <select :value="props.to" @input="event => emit('update:to', event.target.value)">
     <option v-for="{ label, value } of langs" :key="value" :value="value">{{ label }}</option>
   </select>
 </template>

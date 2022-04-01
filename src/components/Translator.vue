@@ -6,7 +6,6 @@
 
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
-import FromTo from '/src/components/FromTo.vue'
 
 const props = defineProps({
   fn: Function,

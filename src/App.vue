@@ -12,8 +12,6 @@
 import { ref } from 'vue'
 
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
-import Translator from '/src/components/Translator.vue'
-import AppConfigModal from '/src/components/AppConfigModal.vue'
 import baiduTranslate from '/src/plugins/translator/baidu'
 
 const appConfigModal = ref()

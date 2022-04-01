@@ -12,16 +12,18 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import cloneDeep from 'lodash/cloneDeep'
-import store from '/src/store'
+import { cloneDeep } from 'lodash'
+import { useAccountStore } from '/src/store/configurator'
 import { message } from 'ant-design-vue'
+
+const accountStore = useAccountStore()
 
 const accounts = ref()
 const loadAccounts = () => {
-  accounts.value = cloneDeep(store.getters.accounts())
+  accounts.value = cloneDeep(accountStore.getAll())
 }
 const saveAccounts = () => {
-  store.commit('setAccounts', accounts.value)
+  accountStore.putAll(accounts.value)
   message.success('已保存')
   changeVisible(false)
 }

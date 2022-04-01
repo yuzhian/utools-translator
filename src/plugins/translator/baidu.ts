@@ -1,9 +1,10 @@
 import md5 from 'crypto-js/md5'
 import fetchJsonp from 'fetch-jsonp'
-import store from '/src/store'
+import { useAccountStore } from '/src/store/configurator'
 
 export default async (text: string, from = 'zh', to = 'en'): Promise<any> => {
-  const { appid, secret } = store.getters.accounts('baidu')
+  const accountStore = useAccountStore()
+  const { appid, secret } = accountStore.get('baidu')
   const salt = new Date().getTime()
   const sign = md5(appid + text + salt + secret)
   const params = new URLSearchParams()
