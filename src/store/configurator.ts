@@ -12,6 +12,7 @@ export const useAccountStore = defineStore('accounts', () => {
       localStorage.setItem('accounts', JSON.stringify(accounts))
       return
     }
+    utools.dbStorage.setItem('accounts', accounts)
   }
 
   function _lodeAccount() {
@@ -19,10 +20,15 @@ export const useAccountStore = defineStore('accounts', () => {
     if (!prod) {
       return JSON.parse(localStorage.getItem('accounts') || '{"baidu": {}}')
     }
+    return utools.dbStorage.getItem('accounts') || { baidu: {} }
   }
 
   function getAll() {
     return accounts
+  }
+
+  function get(app: string) {
+    return accounts[app] ?? {}
   }
 
   function putAll(obj: Accounts) {
@@ -32,5 +38,5 @@ export const useAccountStore = defineStore('accounts', () => {
     _save()
   }
 
-  return { getAll, putAll }
+  return { get, getAll, putAll }
 })

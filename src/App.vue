@@ -3,7 +3,7 @@
     <a-config-provider :locale="zhCN">
       <Translator :fn="baiduTranslate" />
       <AppConfigModal ref="appConfigModal" />
-      <button class="fixed bottom-2 left-2" @click="appConfigModal.changeVisible(true)">设置</button>
+      <AButton type="link" class="fixed bottom-0 left-0" @click="appConfigModal.changeVisible(true)">设置</AButton>
     </a-config-provider>
   </main>
 </template>

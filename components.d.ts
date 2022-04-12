@@ -4,9 +4,16 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AButton: typeof import('ant-design-vue/es')['Button']
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
+    AInput: typeof import('ant-design-vue/es')['Input']
+    AInputPassword: typeof import('ant-design-vue/es')['InputPassword']
     AModal: typeof import('ant-design-vue/es')['Modal']
     AppConfigModal: typeof import('./src/components/AppConfigModal.vue')['default']
+    ASelect: typeof import('ant-design-vue/es')['Select']
+    ASelectOption: typeof import('ant-design-vue/es')['SelectOption']
+    ASpace: typeof import('ant-design-vue/es')['Space']
+    ATextarea: typeof import('ant-design-vue/es')['Textarea']
     FromTo: typeof import('./src/components/FromTo.vue')['default']
     Translator: typeof import('./src/components/Translator.vue')['default']
   }

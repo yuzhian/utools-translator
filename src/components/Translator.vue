@@ -1,7 +1,9 @@
 <template>
-  <textarea ref="input" v-model="src" :rows="10" class="w-full" />
-  <FromTo v-model:from="trans.from" v-model:to="trans.to" />
-  <div>{{ dst }}</div>
+  <div class="m-1">
+    <ATextarea ref="input" v-model:value="src" :rows="10" class="w-full" />
+    <FromTo v-model:from="trans.from" v-model:to="trans.to" />
+    <div>{{ dst }}</div>
+  </div>
 </template>
 
 <script setup lang="ts">
