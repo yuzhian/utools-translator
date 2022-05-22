@@ -1,26 +1,16 @@
 import { reactive } from 'vue'
 import { defineStore } from 'pinia'
-
-const prod = import.meta.env.PROD
+import storage from '/src/plugins/storage'
 
 export const useAccountStore = defineStore('accounts', () => {
-  const accounts: Accounts = reactive(_lodeAccount())
+  const accounts: Accounts = reactive(_getAllAccount())
 
-  function _save() {
-    // 测试
-    if (!prod) {
-      localStorage.setItem('accounts', JSON.stringify(accounts))
-      return
-    }
-    utools.dbStorage.setItem('accounts', accounts)
+  function _saveAllAccount() {
+    storage.setItem('accounts', JSON.stringify(accounts))
   }
 
-  function _lodeAccount() {
-    // 测试
-    if (!prod) {
-      return JSON.parse(localStorage.getItem('accounts') || '{"baidu": {}}')
-    }
-    return utools.dbStorage.getItem('accounts') || { baidu: {} }
+  function _getAllAccount() {
+    return JSON.parse(storage.getItem('accounts') || '{"baidu": {}}')
   }
 
   function getAll() {
@@ -35,7 +25,7 @@ export const useAccountStore = defineStore('accounts', () => {
     for (const [key, val] of Object.entries(obj)) {
       accounts[key] = val
     }
-    _save()
+    _saveAllAccount()
   }
 
   return { get, getAll, putAll }

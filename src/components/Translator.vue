@@ -1,8 +1,8 @@
 <template>
   <div class="m-1">
     <ATextarea ref="input" v-model:value="src" :rows="10" class="w-full" />
-    <FromTo v-model:from="trans.from" v-model:to="trans.to" />
-    <div>{{ dst }}</div>
+    <LanguageSelector v-model:from="trans.from" v-model:to="trans.to" class="w-full" />
+    <p v-for="(item, index) of dst" :key="index">{{ item }}</p>
   </div>
 </template>
 
@@ -13,12 +13,23 @@ const props = defineProps({
   fn: Function,
 })
 
-const src = ref<string>('') // 原文
-const dst = ref<string>('') // 译文
+const src = ref<string>() // 原文
+const dst = ref<string[]>() // 译文段落集
 const trans = reactive({
   from: 'auto',
   to: 'auto',
 })
+
+// 翻译调用
+const fetchTranslation = () => {
+  if (!src.value) {
+    dst.value = []
+    return
+  }
+  props.fn?.(src.value, trans.from, trans.to).then((result: string) => {
+    dst.value = result.split('\n')
+  })
+}
 
 // 防抖
 const wait = 800
@@ -29,17 +40,7 @@ const debounce = (fn: Function) => {
 }
 
 // 监听原文和语种, 任一变化后都将重新翻译
-watch([src, trans], () => {
-  debounce(() => {
-    if (!src.value) {
-      dst.value = ''
-      return
-    }
-    props.fn?.(src.value, trans.from, trans.to).then((result: string) => {
-      dst.value = result
-    })
-  })
-})
+watch([src, trans], () => debounce(fetchTranslation))
 
 // 聚焦输入框
 const input = ref()

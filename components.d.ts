@@ -14,7 +14,7 @@ declare module 'vue' {
     ASelectOption: typeof import('ant-design-vue/es')['SelectOption']
     ASpace: typeof import('ant-design-vue/es')['Space']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
-    FromTo: typeof import('./src/components/FromTo.vue')['default']
+    LanguageSelector: typeof import('./src/components/LanguageSelector.vue')['default']
     Translator: typeof import('./src/components/Translator.vue')['default']
   }
 }

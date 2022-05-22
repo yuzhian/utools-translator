@@ -4,7 +4,7 @@
       <div>{{ k }}</div>
       <div class="grid grid-cols-2 gap-2">
         <AInput v-model:value="accounts[k]['appid']" placeholder="请输入应用ID" />
-        <AInputPassword v-model:value="accounts[k]['secret']" placeholder="请输入密钥"  />
+        <AInputPassword v-model:value="accounts[k]['secret']" placeholder="请输入密钥" />
       </div>
     </div>
   </a-modal>

@@ -3,13 +3,17 @@
     <a-config-provider :locale="zhCN">
       <Translator :fn="baiduTranslate" />
       <AppConfigModal ref="appConfigModal" />
-      <AButton type="link" class="fixed bottom-0 left-0" @click="appConfigModal.changeVisible(true)">设置</AButton>
+
+      <AButton type="link" size="large" class="bottom-0 left-0" @click="appConfigModal.changeVisible(true)">
+        <template #icon><SettingOutlined /></template>
+      </AButton>
     </a-config-provider>
   </main>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { SettingOutlined } from '@ant-design/icons-vue'
 
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import baiduTranslate from '/src/plugins/translator/baidu'

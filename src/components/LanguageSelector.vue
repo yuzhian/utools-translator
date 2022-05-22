@@ -1,19 +1,19 @@
 <template>
-  <a-space class="my-2">
-    <a-select :value="props.from" @change="value => emit('update:from', value)">
+  <a-space class="my-2 justify-center">
+    <a-select :value="props.from" class="w-40" @change="value => emit('update:from', value)">
       <a-select-option v-for="{ label, value } of langs" :key="value" :value="value">{{ label }}</a-select-option>
     </a-select>
     <a-button type="text" @click="handleExchange">
-      <template #icon><retweet-outlined /></template>
+      <template #icon><RetweetOutlined /></template>
     </a-button>
-    <a-select :value="props.to" @change="value => emit('update:to', value)">
+    <a-select :value="props.to" class="w-40" @change="value => emit('update:to', value)">
       <a-select-option v-for="{ label, value } of langs" :key="value" :value="value">{{ label }}</a-select-option>
     </a-select>
   </a-space>
 </template>
 
 <script setup lang="ts">
-import RetweetOutlined from '@ant-design/icons-vue/RetweetOutlined'
+import { RetweetOutlined } from '@ant-design/icons-vue'
 const emit = defineEmits(['update:from', 'update:to'])
 const props = defineProps({
   from: String,
