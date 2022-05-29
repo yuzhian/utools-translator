@@ -30,6 +30,11 @@ export default defineConfig({
     preprocessorOptions: {
       less: {
         javascriptEnabled: true,
+        modifyVars: {
+          'layout-header-background': '@white',
+          'layout-body-background': '@white',
+          'tabs-bar-margin': '0',
+        },
       },
     },
   },

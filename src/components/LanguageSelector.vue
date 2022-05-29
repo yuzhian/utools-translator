@@ -1,24 +1,30 @@
 <template>
-  <a-space class="my-2 justify-center">
-    <a-select :value="props.from" class="w-40" @change="value => emit('update:from', value)">
-      <a-select-option v-for="{ label, value } of langs" :key="value" :value="value">{{ label }}</a-select-option>
-    </a-select>
-    <a-button type="text" @click="handleExchange">
-      <template #icon><RetweetOutlined /></template>
-    </a-button>
-    <a-select :value="props.to" class="w-40" @change="value => emit('update:to', value)">
-      <a-select-option v-for="{ label, value } of langs" :key="value" :value="value">{{ label }}</a-select-option>
-    </a-select>
-  </a-space>
+  <a-row :gutter="8" p="y-1">
+    <a-col v-for="prop of emitProps" :key="prop" :span="12">
+      <a-dropdown>
+        <template #overlay>
+          <a-menu @click="({ key }) => handleEmit(prop, key)">
+            <a-menu-item v-for="{ label, value } of langs" :key="value">{{ label }}</a-menu-item>
+          </a-menu>
+        </template>
+        <a-button block>{{ langs.find(({ value }) => value === props[prop])?.['label'] }}</a-button>
+      </a-dropdown>
+    </a-col>
+  </a-row>
 </template>
 
 <script setup lang="ts">
 import { RetweetOutlined } from '@ant-design/icons-vue'
+
+const emitProps: ['from', 'to'] = ['from', 'to']
 const emit = defineEmits(['update:from', 'update:to'])
+const handleEmit = (prop: 'from' | 'to', key: string) => emit(`update:${prop}`, key)
+
 const props = defineProps({
   from: String,
   to: String,
 })
+
 const langs = [
   { label: '自动检测', value: 'auto' },
   { label: '中文', value: 'zh' },
@@ -29,10 +35,4 @@ const langs = [
   { label: '繁体中文', value: 'cht' },
   { label: '粤语', value: 'yue' },
 ]
-
-const handleExchange = () => {
-  const temp = props.from
-  emit('update:from', props.to)
-  emit('update:to', temp)
-}
 </script>

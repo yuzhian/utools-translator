@@ -1,5 +1,4 @@
 import md5 from 'crypto-js/md5'
-import { message } from 'ant-design-vue'
 import { useAccountStore } from '/src/store/configurator'
 
 const url = 'http://api.fanyi.baidu.com/api/trans/vip/translate'
@@ -7,6 +6,9 @@ const url = 'http://api.fanyi.baidu.com/api/trans/vip/translate'
 export default async (text: string, from = 'zh', to = 'en'): Promise<any> => {
   const accountStore = useAccountStore()
   const { appid, secret } = accountStore.get('baidu')
+  if (!appid || !secret) {
+    throw '请先配置百度翻译账号'
+  }
   const salt = new Date().getTime().toString()
   const sign = md5(appid + text + salt + secret).toString()
   const response = await fetch(url, {
@@ -16,8 +18,7 @@ export default async (text: string, from = 'zh', to = 'en'): Promise<any> => {
   })
   const json: BaiduTranslateResponse = await response.json()
   if (json.error_code) {
-    message.error('百度翻译失败：' + json.error_msg)
-    return ''
+    throw '百度翻译失败：' + json.error_msg
   }
   return json.trans_result.map(item => item.dst).join('\n')
 }

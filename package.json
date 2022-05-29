@@ -16,7 +16,7 @@
   "devDependencies": {
     "@ant-design/icons-vue": "^6.1.0",
     "@vitejs/plugin-vue": "^2.3.0",
-    "ant-design-vue": "^2.2.8",
+    "ant-design-vue": "^3.2.5",
     "consola": "^2.15.3",
     "less": "^4.1.2",
     "lodash": "^4.17.21",

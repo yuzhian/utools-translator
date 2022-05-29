@@ -5,15 +5,18 @@
 declare module 'vue' {
   export interface GlobalComponents {
     AButton: typeof import('ant-design-vue/es')['Button']
+    ACol: typeof import('ant-design-vue/es')['Col']
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
+    ADropdown: typeof import('ant-design-vue/es')['Dropdown']
     AInput: typeof import('ant-design-vue/es')['Input']
     AInputPassword: typeof import('ant-design-vue/es')['InputPassword']
+    AMenu: typeof import('ant-design-vue/es')['Menu']
+    AMenuItem: typeof import('ant-design-vue/es')['MenuItem']
     AModal: typeof import('ant-design-vue/es')['Modal']
-    AppConfigModal: typeof import('./src/components/AppConfigModal.vue')['default']
-    ASelect: typeof import('ant-design-vue/es')['Select']
-    ASelectOption: typeof import('ant-design-vue/es')['SelectOption']
-    ASpace: typeof import('ant-design-vue/es')['Space']
-    ATextarea: typeof import('ant-design-vue/es')['Textarea']
+    AppConfiguratorModal: typeof import('./src/components/AppConfiguratorModal.vue')['default']
+    ARow: typeof import('ant-design-vue/es')['Row']
+    ATabPane: typeof import('ant-design-vue/es')['TabPane']
+    ATabs: typeof import('ant-design-vue/es')['Tabs']
     LanguageSelector: typeof import('./src/components/LanguageSelector.vue')['default']
     Translator: typeof import('./src/components/Translator.vue')['default']
   }
