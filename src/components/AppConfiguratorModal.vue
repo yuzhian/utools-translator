@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { cloneDeep } from 'lodash'
-import { useAccountStore } from '/src/store/configurator'
+import useAccountStore from '/src/store/account'
 import { message } from 'ant-design-vue'
 
 const accountStore = useAccountStore()

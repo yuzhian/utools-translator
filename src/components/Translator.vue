@@ -1,5 +1,5 @@
 <template>
-  <LanguageSelector v-model:from="trans.from" v-model:to="trans.to" />
+  <LanguageSelector :languages="props.languages" v-model:from="trans.from" v-model:to="trans.to" />
   <a-row :gutter="8">
     <a-col :span="12">
       <textarea ref="input" v-model="src" h="[calc(100vh-92px)]" w="full" resize="none" border="2 rounded-none gray-500 hover:yellow-500" />
@@ -17,6 +17,7 @@ import { message } from 'ant-design-vue'
 import { reactive, ref, watch } from 'vue'
 
 const props = defineProps({
+  languages: {} as { [key: string]: string },
   translate: Function,
 })
 

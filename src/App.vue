@@ -1,8 +1,8 @@
 <template>
   <a-config-provider :csp="zhCN">
     <a-tabs v-model:activeKey="activeKey" h="screen" p="1">
-      <a-tab-pane v-for="item of 3" :key="item" :tab="'Tab ' + item">
-        <Translator :translate="baiduTranslate" />
+      <a-tab-pane v-for="{ name, languages, translate } of translators" :key="name" :tab="name">
+        <Translator :languages="languages" :translate="translate" />
       </a-tab-pane>
       <template #rightExtra>
         <AButton type="link" size="large" @click="appConfigModal.changeVisible(true)">
@@ -18,8 +18,8 @@
 import { ref } from 'vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { SettingOutlined } from '@ant-design/icons-vue'
-import baiduTranslate from '/src/plugins/translator/baidu'
+import { translators } from '/src/plugins/translator'
 
-const activeKey = ref(1)
+const activeKey = ref(translators[0]?.name)
 const appConfigModal = ref()
 </script>

@@ -1,16 +1,20 @@
 import { reactive } from 'vue'
 import { defineStore } from 'pinia'
+import { keys } from '/src/plugins/translator'
 import storage from '/src/plugins/storage'
 
-export const useAccountStore = defineStore('accounts', () => {
-  const accounts: Accounts = reactive(_getAllAccount())
+export default defineStore('accounts', () => {
+  const accounts: Accounts = reactive(restore())
 
-  function _saveAllAccount() {
+  function store() {
     storage.setItem('accounts', JSON.stringify(accounts))
   }
 
-  function _getAllAccount() {
-    return JSON.parse(storage.getItem('accounts') || '{"baidu": {}}')
+  function restore() {
+    return {
+      ...Object.fromEntries(keys.map(item => [item, {}])),
+      ...JSON.parse(storage.getItem('accounts') || '{}'),
+    }
   }
 
   function getAll() {
@@ -25,7 +29,7 @@ export const useAccountStore = defineStore('accounts', () => {
     for (const [key, val] of Object.entries(obj)) {
       accounts[key] = val
     }
-    _saveAllAccount()
+    store()
   }
 
   return { get, getAll, putAll }
