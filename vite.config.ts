@@ -34,6 +34,7 @@ export default defineConfig({
           'layout-header-background': '@white',
           'layout-body-background': '@white',
           'tabs-bar-margin': '0',
+          'primary-color': '#6b7280'
         },
       },
     },

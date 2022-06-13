@@ -2,10 +2,10 @@
   <LanguageSelector :languages="props.languages" v-model:from="trans.from" v-model:to="trans.to" />
   <a-row :gutter="8">
     <a-col :span="12">
-      <textarea ref="input" v-model="src" h="[calc(100vh-92px)]" w="full" resize="none" border="2 rounded-none gray-500 hover:yellow-500" />
+      <textarea ref="input" v-model="src" h="[calc(100vh-92px)]" w="full" resize="none" border="2 rounded-none gray-500" />
     </a-col>
     <a-col :span="12">
-      <div w="full" h="[calc(100vh-92px)]" overflow="x-hidden y-scroll" border="2 rounded-none gray-500 hover:yellow-500">
+      <div w="full" h="[calc(100vh-92px)]" overflow="x-hidden y-scroll" border="2 rounded-none gray-500">
         <p v-for="(item, index) of dst" :key="index">{{ item }}</p>
       </div>
     </a-col>
@@ -34,7 +34,7 @@ const fetchTranslation = () => {
     dst.value = []
     return
   }
-  props
+  return props
     .translate?.(src.value, trans.from, trans.to)
     .then((result: string) => {
       dst.value = result.split('\n')
@@ -44,16 +44,14 @@ const fetchTranslation = () => {
     })
 }
 
-// 防抖
-const wait = 800
-let timeoutID: number
-const debounce = (fn: Function) => {
-  if (timeoutID) clearTimeout(timeoutID)
-  timeoutID = setTimeout(() => fn(), wait)
+let timeoutID: number | null
+const throttle = (fn: Function) => {
+  if (timeoutID) return
+  timeoutID = setTimeout(() => fn().then(() => (timeoutID = null)), 1000)
 }
 
 // 监听原文和语种, 任一变化后都将重新翻译
-watch([src, trans], () => debounce(fetchTranslation))
+watch([src, trans], () => throttle(fetchTranslation))
 
 // 聚焦输入框
 const input = ref()

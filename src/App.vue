@@ -1,7 +1,7 @@
 <template>
   <a-config-provider :csp="zhCN">
     <a-tabs v-model:activeKey="activeKey" h="screen" p="1">
-      <a-tab-pane v-for="{ name, languages, translate } of translators" :key="name" :tab="name">
+      <a-tab-pane v-for="({ name, languages, translate }, key) in translators" :key="key" :tab="name">
         <Translator :languages="languages" :translate="translate" />
       </a-tab-pane>
       <template #rightExtra>
@@ -20,6 +20,6 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { SettingOutlined } from '@ant-design/icons-vue'
 import { translators } from '/src/plugins/translator'
 
-const activeKey = ref(translators[0]?.name)
+const activeKey = ref(Object.keys(translators)[0])
 const appConfigModal = ref()
 </script>

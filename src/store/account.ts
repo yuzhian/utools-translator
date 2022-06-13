@@ -1,6 +1,6 @@
 import { reactive } from 'vue'
 import { defineStore } from 'pinia'
-import { keys } from '/src/plugins/translator'
+import { translators } from '/src/plugins/translator'
 import storage from '/src/plugins/storage'
 
 export default defineStore('accounts', () => {
@@ -12,7 +12,7 @@ export default defineStore('accounts', () => {
 
   function restore() {
     return {
-      ...Object.fromEntries(keys.map(item => [item, {}])),
+      ...Object.fromEntries(Object.entries(translators).map(([item]) => [item, {}])),
       ...JSON.parse(storage.getItem('accounts') || '{}'),
     }
   }
