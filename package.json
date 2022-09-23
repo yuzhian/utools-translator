@@ -1,0 +1,27 @@
+{
+  "name": "utools-translator",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host --port 5000",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "ant-design-vue": "^3.2.12",
+    "lodash": "^4.17.21",
+    "pinia": "^2.0.22",
+    "vue": "^3.2.37"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^3.1.0",
+    "less": "^4.1.3",
+    "typescript": "^4.6.4",
+    "unplugin-vue-components": "^0.22.7",
+    "vite": "^3.1.0",
+    "vite-plugin-windicss": "^1.8.8",
+    "vue-tsc": "^0.40.4",
+    "windicss": "^3.5.6"
+  }
+}
