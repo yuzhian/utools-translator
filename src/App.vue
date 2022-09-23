@@ -14,7 +14,10 @@ import { ref } from 'vue'
 const text = ref<string>('')
 
 const handleClick = () => {
-  message.info('Hello AntDV')
+  message.info('验证跨域请求处理, 打开控制台查看')
+  fetch('https://www.baidu.com')
+    .then(response => console.log(response))
+    .catch(error => console.error(error))
 }
 
 // utools api, 本插件被调用时的回调, 用于初始化原文值. see https://u.tools/docs/developer/api.html#onpluginenter-callback
