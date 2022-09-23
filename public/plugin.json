@@ -1,0 +1,11 @@
+{
+  "main": "index.html",
+  "logo": "translate.png",
+  "features": [
+    {
+      "code": "翻译",
+      "explain": "文本翻译",
+      "cmds": ["翻译", "translate", "fanyi", { "type": "over", "label": "翻译", "minLength": 2, "maxLength": 1024 }]
+    }
+  ]
+}

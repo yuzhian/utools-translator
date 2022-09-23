@@ -987,6 +987,11 @@ unplugin@^0.9.5:
     webpack-sources "^3.2.3"
     webpack-virtual-modules "^0.4.5"
 
+utools-api-types@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmmirror.com/utools-api-types/-/utools-api-types-3.0.0.tgz#e30a2fd40e183d57a1cc04be7c4cf09fbfadd12d"
+  integrity sha512-KJYytaX/cnxRTm+fBKeDAV6PhE1Emrv4bZm/6pigVhxEM4StAy8UFGyo22bVARSRIUUxbEdtWIo6O7qmEGnv5A==
+
 vite-plugin-windicss@^1.8.8:
   version "1.8.8"
   resolved "https://registry.npmmirror.com/vite-plugin-windicss/-/vite-plugin-windicss-1.8.8.tgz#ff1adf7d1a1c38634c77a4c0125fa730d16138e7"
