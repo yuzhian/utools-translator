@@ -12,6 +12,12 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "/src/*": [
+        "src/*"
+      ]
+    },
     "types": [
       "utools-api-types"
     ]
