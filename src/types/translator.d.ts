@@ -59,7 +59,7 @@ type Translator = {
   /**
    * 服务频率限制, 单位: 毫秒
    */
-  delay: number
+   interval: number
   /**
    * 语种列表 { label: 名称, value: 编码 }
    */

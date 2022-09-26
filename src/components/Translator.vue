@@ -27,21 +27,15 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
-import { debounce } from 'lodash-es'
+import { debounce, throttle } from 'lodash-es'
 
-const { translator } = defineProps<{
-  translator: Translator
-}>()
+const { translator } = defineProps<{ translator: Translator }>()
 
-const emit = defineEmits(['srcChange'])
-const handleSrcChange = (e: Event) => emit('srcChange', (e.target as HTMLInputElement).value)
-
+// 原文译文, 指定的源语言/目标语言, 响应猜测的源语言/目标语言
 const src = reactive<any>({ value: '', from: translator.languages[0]?.key, to: translator.languages[0]?.key })
 const dst = reactive<any>({ value: '', from: '', to: '' })
 
-const label = (k: string) => translator.languages.find(({ key }) => key === k)?.label
-
-// 翻译调用
+// 翻译服务请求
 const handleTranslate = async () => {
   if (!src.value) {
     return Object.assign(dst, { value: '', from: '', to: '' })
@@ -53,12 +47,15 @@ const handleTranslate = async () => {
     typeof err === 'string' ? message.error(err) : console.error(err)
   }
 }
+// 输入防抖(300), 接口限流(默认0)
+const throttled = throttle(handleTranslate, translator.interval || 0, { leading: true, trailing: true })
+watch([src], debounce(throttled, 300))
 
-watch([src], debounce(handleTranslate, translator.delay || 1000, { leading: true, trailing: true }))
+const label = (k: string) => translator.languages.find(({ key }) => key === k)?.label
 
-// 聚焦输入框
 const input = ref()
-
+const emit = defineEmits(['srcChange'])
+const handleSrcChange = (e: Event) => emit('srcChange', (e.target as HTMLInputElement).value)
 defineExpose({
   setSrc: (value: string) => (src.value = value),
   focusInput: () => input?.value?.focus(),

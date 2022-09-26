@@ -50,7 +50,7 @@ export default <Translator>{
   name: '百度翻译',
   icon: 'https://fanyi-cdn.cdn.bcebos.com/webStatic/translation/img/favicon/favicon.ico',
   type: 'secret',
-  delay: 1000,
+  interval: 1000,
   languages: languages,
   translate: translate,
 }

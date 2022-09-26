@@ -31,7 +31,7 @@ export default <Translator>{
   name: '有道翻译',
   icon: 'https://shared.ydstatic.com/images/favicon.ico',
   type: 'free',
-  delay: 1000,
+  interval: 0,
   languages: languages,
   translate: translate,
 }
