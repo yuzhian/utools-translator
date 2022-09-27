@@ -1,20 +1,24 @@
-type Account = {
+type Service = {
+  /**
+   * key
+   */
+  key: string
   /**
    * 账号
    */
-  appid: string
+  appid?: string
   /**
    * 秘钥
    */
-  secret: string
+  secret?: string
+  /**
+   * 令牌
+   */
+  token?: string
   /**
    * 是否启用
    */
   enable: boolean = true
-}
-
-type Accounts = {
-  [app: string]: Account
 }
 
 type LanguageType = {
@@ -55,11 +59,11 @@ type Translator = {
   /**
    * 翻译服务类型 free: 免费服务 secret: 需账号密钥
    */
-  type: 'free' | 'secret' = 'free'
+  type: 'free' | 'secret' | 'token' = 'free'
   /**
    * 服务频率限制, 单位: 毫秒
    */
-   interval: number
+  interval: number
   /**
    * 语种列表 { label: 名称, value: 编码 }
    */

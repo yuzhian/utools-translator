@@ -8,6 +8,8 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AButton: typeof import('ant-design-vue/es')['Button']
+    ACard: typeof import('ant-design-vue/es')['Card']
+    ACardGrid: typeof import('ant-design-vue/es')['CardGrid']
     ACheckbox: typeof import('ant-design-vue/es')['Checkbox']
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
     ADrawer: typeof import('ant-design-vue/es')['Drawer']
@@ -21,6 +23,7 @@ declare module '@vue/runtime-core' {
     ATabs: typeof import('ant-design-vue/es')['Tabs']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     Manager: typeof import('./../components/Manager.vue')['default']
+    ServiceForm: typeof import('./../components/ServiceForm.vue')['default']
     Translator: typeof import('./../components/Translator.vue')['default']
   }
 }

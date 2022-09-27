@@ -22,7 +22,7 @@ export default defineConfig({
         javascriptEnabled: true,
         modifyVars: {
           'drawer-header-padding': '0.5rem',
-          'drawer-body-padding': '0 0.5rem 1rem',
+          'drawer-body-padding': '0.5rem',
           'tabs-horizontal-gutter': '0.75rem',
           'tabs-bar-margin': '0',
         },

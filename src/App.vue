@@ -1,15 +1,15 @@
 <template>
   <a-config-provider :locale="zhCN">
     <!-- 遍历启用的翻译服务 -->
-    <a-tabs v-model:activeKey="activeTranslator" class="h-screen p-1" @change="reloadTranslator">
-      <template v-for="(translator, key) in translators">
-        <a-tab-pane v-if="translatorStore.isEnable(key.toString())" :key="key">
+    <a-tabs v-model:activeKey="activeTranslator" class="h-screen p-1">
+      <template v-for="{ key, enable } of translatorStore.services">
+        <a-tab-pane v-if="enable" :key="key">
           <template #tab>
-            <img :src="translator.icon || '/translate.png'" class="inline-block w-4 h-4" />
-            <span class="text-sm mx-1">{{ translator.name }}</span>
+            <img :src="translators[key].icon || '/translate.png'" class="inline-block w-4 h-4" />
+            <span class="text-sm mx-1">{{ translators[key].name }}</span>
           </template>
           <!-- 翻译器 -->
-          <Translator :ref="elRef => appendTranslatorRefs(elRef, key.toString())" :translator="translator" @src-change="updateSrc" />
+          <Translator :ref="elRef => appendTranslatorRefs(elRef, key.toString())" :translator="translators[key]" @src-change="updateSrc" />
         </a-tab-pane>
       </template>
 
@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { Key } from 'ant-design-vue/lib/_util/type'
 import { SettingOutlined } from '@ant-design/icons-vue'
@@ -39,31 +39,32 @@ const translatorStore = useTranslatorStore()
 const src = ref<any>()
 const updateSrc = (value: string) => (src.value = value)
 
-// 翻译组件引用列表(对象, key为翻译服务名)
+// dom引用
+const appConfigModal = ref()
 const translatorRefs: { [key: string]: any } = {}
 const appendTranslatorRefs = (elRef: any, key: string) => elRef && (translatorRefs[key] = elRef)
 
-// 设置组件引用
-const appConfigModal = ref()
+// 活动的翻译器
+const activeTranslator = ref(translatorStore.services.find(({ enable }) => enable)?.key || translatorStore.services[0].key)
+watch(activeTranslator, (key: Key) => nextTick(() => writeTo(key, src.value)))
 
-// 重新加载翻译组件
-const reloadTranslator = (key: Key) =>
-  nextTick(() => {
-    translatorRefs[key].setSrc(src.value)
-    translatorRefs[key].focusInput()
-  })
-// 活动的翻译组件: 如果之前的组件仍然启用则保持现状, 否则取启用的翻译列表第一项
-const activeTranslator = ref(Object.keys(translators).filter(key => translatorStore.isEnable(key))[0])
+const writeTo = (key: Key, text: string) => {
+  translatorRefs[key].setSrc((src.value = text))
+  translatorRefs[key].focusInput()
+}
+
 const handleConfigChange = () => {
-  translatorStore.isEnable(activeTranslator.value) || (activeTranslator.value = Object.keys(translators).filter(key => translatorStore.isEnable(key))[0])
-  reloadTranslator(activeTranslator.value)
+  if (translatorStore.get(activeTranslator.value)?.enable) {
+    writeTo(activeTranslator.value, src.value)
+  } else {
+    activeTranslator.value = translatorStore.services.find(({ enable }) => enable)?.key || translatorStore.services[0].key
+  }
 }
 
 // utools api, 本插件被调用时的回调, 用于初始化原文值. see https://u.tools/docs/developer/api.html#onpluginenter-callback
 if (window.utools) {
   window.utools.onPluginEnter(({ payload }) => {
-    src.value = payload
-    reloadTranslator(activeTranslator.value)
+    writeTo(activeTranslator.value, payload)
   })
 }
 </script>

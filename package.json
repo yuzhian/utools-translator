@@ -12,7 +12,8 @@
     "ant-design-vue": "^3.2.12",
     "crypto-js": "^4.1.1",
     "pinia": "^2.0.22",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.1.0",
