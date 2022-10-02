@@ -20,7 +20,7 @@ const translate = async (value: string, from = 'zh', to = 'en'): Promise<Transla
   if (!appid || !secret) {
     throw '未配置百度翻译账号'
   }
-  const salt = new Date().getTime().toString()
+  const salt = Date.now().toString()
   const sign = md5(appid + value + salt + secret).toString()
   const response = await fetch(url, {
     method: 'POST',
