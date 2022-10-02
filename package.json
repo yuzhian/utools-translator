@@ -4,13 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host --port 5000",
+    "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "ant-design-vue": "^3.2.12",
     "crypto-js": "^4.1.1",
+    "hotkeys-js": "^3.10.0",
     "pinia": "^2.0.22",
     "vue": "^3.2.37",
     "vuedraggable": "^4.1.0"

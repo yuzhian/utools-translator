@@ -16,6 +16,14 @@ export default defineConfig({
       dts: 'src/types/components.d.ts',
     }),
   ],
+  server: {
+    host: true,
+    port: 5000,
+  },
+  preview: {
+    host: true,
+    port: 5000,
+  },
   css: {
     preprocessorOptions: {
       less: {

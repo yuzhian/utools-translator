@@ -1,5 +1,5 @@
 import md5 from 'crypto-js/md5'
-import useTranslatorStore from '../../store/translator'
+import useServiceStore from '/src/store/service'
 
 const languages = [
   { key: 'auto', label: '自动检测' },
@@ -15,8 +15,8 @@ const languages = [
 const url = 'http://api.fanyi.baidu.com/api/trans/vip/translate'
 
 const translate = async (value: string, from = 'zh', to = 'en'): Promise<TranslateDST> => {
-  const translatorStore = useTranslatorStore()
-  const { appid, secret } = translatorStore.get('baidu')
+  const serviceStore = useServiceStore()
+  const { appid, secret } = serviceStore.get('baidu')
   if (!appid || !secret) {
     throw '未配置百度翻译账号'
   }

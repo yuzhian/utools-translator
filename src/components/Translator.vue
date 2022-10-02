@@ -19,7 +19,7 @@
   </div>
 
   <div class="flex justify-between -mx-1">
-    <a-textarea ref="input" v-model:value="src.value" class="mx-1 resize-none" @change="handleSrcChange" />
+    <a-textarea ref="input" v-model:value="src.value" class="mx-1 resize-none" />
     <a-textarea :value="dst.value" readonly class="mx-1 resize-none" />
   </div>
 </template>
@@ -49,13 +49,15 @@ const handleTranslate = async () => {
 }
 // 输入防抖(300), 接口限流(默认0)
 const throttled = throttle(handleTranslate, translator.interval || 0, { leading: true, trailing: true })
-watch([src], debounce(throttled, 300))
+watch(src, debounce(throttled, 300))
 
+const emit = defineEmits(['update'])
+watch([src, dst], ([_src, _dst]) => {
+  emit('update', { src: _src.value, dst: _dst.value })
+})
 const label = (k: string) => translator.languages.find(({ key }) => key === k)?.label
 
 const input = ref()
-const emit = defineEmits(['srcChange'])
-const handleSrcChange = (e: Event) => emit('srcChange', (e.target as HTMLInputElement).value)
 defineExpose({
   setSrc: (value: string) => (src.value = value),
   focusInput: () => input?.value?.focus(),

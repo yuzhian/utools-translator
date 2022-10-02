@@ -21,6 +21,17 @@ type Service = {
   enable: boolean = true
 }
 
+type Hotkey = {
+  /**
+   * 快捷键
+   */
+  hotkey?: string
+  /**
+   * command
+   */
+  command?: string
+}
+
 type LanguageType = {
   /**
    * 显示名称
@@ -72,4 +83,15 @@ type Translator = {
    * 翻译函数 { value: 翻译文本, from: 源语言, to: 目标语言 } => 翻译处理函数
    */
   translate: (value: string, from?: string, to?: string) => Promise<TranslateDST>
+}
+
+type Command = {
+  /**
+   * 命令名称
+   */
+  label: string
+  /**
+   * 执行函数
+   */
+  exec: (params: any, last: any) => any
 }
