@@ -47,7 +47,7 @@ const updateData = (_data: { src: string; dst: string }) => Object.assign(data, 
 
 // dom引用
 const managerComponent = ref()
-const trs: { [key: string]: any } = {}
+const trs: Record<string, any> = {}
 const keeptr = (elRef: any, key: string) => elRef && (trs[key] = elRef)
 
 // 活动的翻译器

@@ -51,11 +51,11 @@ type TranslateDST = {
   /**
    * 检测源语言
    */
-  from: string
+  from?: string
   /**
    * 检测目标语言
    */
-  to: string
+  to?: string
 }
 
 type Translator = {
