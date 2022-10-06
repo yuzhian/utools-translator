@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "update:cldr": "curl -o ./src/assets/languages/cldr.zh.json -x http://127.0.0.1:7890 https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/languages.json",
+    "update:languages": "node ./update-languages.cjs"
   },
   "dependencies": {
     "ant-design-vue": "^3.2.12",

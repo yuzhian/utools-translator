@@ -1,17 +1,6 @@
 import CryptoJS from 'crypto-js'
 import useServiceStore from '/src/store/service'
 
-const languages = [
-  { key: 'auto', label: '自动检测' },
-  { key: 'zh-CHS', label: '中文' },
-  { key: 'en', label: '英文' },
-  { key: 'jp', label: '日语' },
-  { key: 'ru', label: '俄语' },
-  { key: 'wyw', label: '文言文' },
-  { key: 'cht', label: '繁体中文' },
-  { key: 'yue', label: '粤语' },
-]
-
 const url = 'http://openapi.youdao.com/api'
 
 function truncate(q: string) {
@@ -20,7 +9,7 @@ function truncate(q: string) {
   return q.substring(0, 10) + len + q.substring(len - 10, len)
 }
 
-const translate = async (value: string, from = 'zh', to = 'en'): Promise<TranslateDST> => {
+const translate = async (value: string, from = 'zh', to = 'en'): Promise<TranslateEntity> => {
   const serviceStore = useServiceStore()
   const { appid, secret } = serviceStore.get('youdao')
   if (!appid || !secret) {
@@ -63,7 +52,7 @@ type YoudaoTranslateResponse = {
   query: string
   isWord: boolean
   requestId: string
-  tSpeakUrl:string
+  tSpeakUrl: string
   speakUrl: string
   dict: {
     url: string
@@ -78,6 +67,5 @@ export default <Translator>{
   icon: 'https://shared.ydstatic.com/images/favicon.ico',
   type: 'secret',
   interval: 0,
-  languages: languages,
   translate: translate,
 }

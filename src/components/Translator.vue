@@ -1,21 +1,14 @@
 <template>
-  <div class="flex justify-between py-1 -mx-1">
-    <a-dropdown v-for="p of ['from', 'to']" :key="p" :trigger="['click']" class="mx-1">
-      <!-- 遍历所有可用语言 -->
-      <template #overlay>
-        <a-menu @click="({ key }) => (src[p] = key)">
-          <a-menu-item v-for="{ label, key } of translator.languages" :key="key">
-            {{ label }}
-          </a-menu-item>
-        </a-menu>
-      </template>
-
-      <a-button block>
-        <!-- 当前选用语言和猜测语言 -->
-        {{ label(src[p]) }}
-        {{ src[p] === 'auto' && label(dst[p]) ? `(${label(dst[p])})` : '' }}
-      </a-button>
-    </a-dropdown>
+  <div class="flex justify-between py-1">
+    <a-select v-model:value="src.from" class="w-[calc(50%-0.25rem)] text-center">
+      <template #suffixIcon></template>
+      <a-select-option key="auto" value="auto" :disabled="!translator.languages.map(([k]) => k).includes('auto')">{{ languageLocale['auto'] }}</a-select-option>
+      <a-select-option v-for="key of languageStore.languages" :key="key" :value="key" :disabled="!translator.languages.map(([k]) => k).includes(key)">{{ languageLocale[key] }}</a-select-option>
+    </a-select>
+    <a-select v-model:value="src.to" class="w-[calc(50%-0.25rem)] text-center">
+      <template #suffixIcon></template>
+      <a-select-option v-for="key of languageStore.languages" :key="key" :value="key" :disabled="!translator.languages.find(([k]) => k === src.from)?.[2]?.includes(key)">{{ languageLocale[key] }}</a-select-option>
+    </a-select>
   </div>
 
   <div class="flex justify-between -mx-1">
@@ -28,20 +21,28 @@
 import { reactive, ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { debounce, throttle } from 'lodash-es'
+import { translators, languageLocale } from '/src/plugins/translator'
+import useLanguageStore from '/src/store/language'
+const languageStore = useLanguageStore()
 
 const { translator } = defineProps<{ translator: Translator }>()
 
 // 原文译文, 指定的源语言/目标语言, 响应猜测的源语言/目标语言
-const src = reactive<any>({ value: '', from: translator.languages[0]?.key, to: translator.languages[0]?.key })
-const dst = reactive<any>({ value: '', from: '', to: '' })
+const src = reactive<TranslateEntity>({ from: 'auto', to: languageStore.languages[0] })
+const dst = reactive<TranslateEntity>({})
 
 // 翻译服务请求
+const mapping = (key: string | undefined) => {
+  const code = translator.languages.find(([k]) => k === key)?.[1]
+  if (!code) throw `翻译服务不支持${languageLocale[key || '']}`
+  return code
+}
 const handleTranslate = async () => {
   if (!src.value) {
     return Object.assign(dst, { value: '', from: '', to: '' })
   }
   try {
-    const result = await translator.translate?.(src.value, src.from, src.to)
+    const result = await translator.translate?.(src.value, mapping(src.from), mapping(src.to))
     return Object.assign(dst, result)
   } catch (err: any) {
     typeof err === 'string' ? message.error(err) : console.error(err)
@@ -53,13 +54,12 @@ watch(src, debounce(throttled, 300))
 
 const emit = defineEmits(['update'])
 watch([src, dst], ([_src, _dst]) => {
-  emit('update', { src: _src.value, dst: _dst.value })
+  emit('update', { src: _src, dst: _dst })
 })
-const label = (k: string) => translator.languages.find(({ key }) => key === k)?.label
 
 const input = ref()
 defineExpose({
-  setSrc: (value: string) => (src.value = value),
+  updateSrc: (_src: TranslateEntity) => Object.assign(src, _src),
   focusInput: () => input?.value?.focus(),
 })
 </script>

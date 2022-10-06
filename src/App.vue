@@ -42,8 +42,8 @@ const serviceStore = useServiceStore()
 const hotkeyStore = useHotkeyStore()
 
 // 保留原文和译文
-const data = reactive<{ src: string; dst: string }>({ src: '', dst: '' })
-const updateData = (_data: { src: string; dst: string }) => Object.assign(data, _data)
+const data = reactive<{ src: TranslateEntity; dst: TranslateEntity }>({ src: {}, dst: {} })
+const updateData = (_data: { src: TranslateEntity; dst: TranslateEntity }) => Object.assign(data, _data)
 
 // dom引用
 const managerComponent = ref()
@@ -52,10 +52,10 @@ const keeptr = (elRef: any, key: string) => elRef && (trs[key] = elRef)
 
 // 活动的翻译器
 const activeTranslator = ref(serviceStore.services.find(({ enable }) => enable)?.key || serviceStore.services[0].key)
-watch(activeTranslator, (key: Key) => nextTick(() => writeTo(key, data.src)))
+watch(activeTranslator, (key: Key) => nextTick(() => updateSrc(key, data.src)))
 
-const writeTo = (key: Key, text: string) => {
-  trs[key].setSrc((data.src = text))
+const updateSrc = (key: Key, src: TranslateEntity) => {
+  trs[key].updateSrc((data.src = src))
   trs[key].focusInput()
 }
 
@@ -73,7 +73,7 @@ bindHotkeys()
 // 配置更改回调, 重设翻译器, 重新绑定快捷键
 const handleConfigChange = () => {
   if (serviceStore.get(activeTranslator.value)?.enable) {
-    writeTo(activeTranslator.value, data.src)
+    updateSrc(activeTranslator.value, data.src)
   } else {
     activeTranslator.value = serviceStore.services.find(({ enable }) => enable)?.key || serviceStore.services[0].key
   }
@@ -83,6 +83,6 @@ const handleConfigChange = () => {
 
 // utools api, 本插件被调用时的回调, 用于初始化原文值. see https://u.tools/docs/developer/api.html#onpluginenter-callback
 window.utools?.onPluginEnter(({ payload }) => {
-  writeTo(activeTranslator.value, payload)
+  updateSrc(activeTranslator.value, { value: payload })
 })
 </script>

@@ -1,20 +1,9 @@
 import md5 from 'crypto-js/md5'
 import useServiceStore from '/src/store/service'
 
-const languages = [
-  { key: 'auto', label: '自动检测' },
-  { key: 'zh', label: '中文' },
-  { key: 'en', label: '英文' },
-  { key: 'jp', label: '日语' },
-  { key: 'ru', label: '俄语' },
-  { key: 'wyw', label: '文言文' },
-  { key: 'cht', label: '繁体中文' },
-  { key: 'yue', label: '粤语' },
-]
-
 const url = 'http://api.fanyi.baidu.com/api/trans/vip/translate'
 
-const translate = async (value: string, from = 'zh', to = 'en'): Promise<TranslateDST> => {
+const translate = async (value: string, from = 'zh', to = 'en'): Promise<TranslateEntity> => {
   const serviceStore = useServiceStore()
   const { appid, secret } = serviceStore.get('baidu')
   if (!appid || !secret) {
@@ -51,6 +40,5 @@ export default <Translator>{
   icon: 'https://fanyi-cdn.cdn.bcebos.com/webStatic/translation/img/favicon/favicon.ico',
   type: 'secret',
   interval: 1000,
-  languages: languages,
   translate: translate,
 }

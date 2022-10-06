@@ -4,31 +4,9 @@ import dayjs, { Dayjs } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 dayjs.extend(utc)
 
-const languages = [
-  { key: 'auto', label: '自动识别' },
-  { key: 'zh', label: '简体中文' },
-  { key: 'zh-TW', label: '繁体中文' },
-  { key: 'en', label: '英语' },
-  { key: 'ja', label: '日语' },
-  { key: 'ko', label: '韩语' },
-  { key: 'fr', label: '法语' },
-  { key: 'es', label: '西班牙语' },
-  { key: 'it', label: '意大利语' },
-  { key: 'de', label: '德语' },
-  { key: 'tr', label: '土耳其语' },
-  { key: 'ru', label: '俄语' },
-  { key: 'pt', label: '葡萄牙语' },
-  { key: 'vi', label: '越南语' },
-  { key: 'id', label: '印尼语' },
-  { key: 'th', label: '泰语' },
-  { key: 'ms', label: '马来西亚语' },
-  { key: 'ar', label: '阿拉伯语' },
-  { key: 'hi', label: '印地语' },
-]
-
 const url = 'https://tmt.tencentcloudapi.com'
 
-const translate = async (value: string, from = 'zh', to = 'en'): Promise<TranslateDST> => {
+const translate = async (value: string, from = 'zh', to = 'en'): Promise<TranslateEntity> => {
   const serviceStore = useServiceStore()
   const { appid, secret } = serviceStore.get('tencent')
   if (!appid || !secret) {
@@ -107,6 +85,5 @@ export default <Translator>{
   icon: 'https://fanyi.qq.com/favicon.ico',
   type: 'secret',
   interval: 1000,
-  languages: languages,
   translate: translate,
 }

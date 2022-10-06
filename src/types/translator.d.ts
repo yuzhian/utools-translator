@@ -21,33 +21,11 @@ type Service = {
   enable: boolean = true
 }
 
-type Hotkey = {
-  /**
-   * 快捷键
-   */
-  hotkey?: string
-  /**
-   * command
-   */
-  command?: string
-}
-
-type LanguageType = {
-  /**
-   * 显示名称
-   */
-  label: string
-  /**
-   * 语言编码
-   */
-  key: string
-}
-
-type TranslateDST = {
+type TranslateEntity = {
   /**
    * 翻译结果
    */
-  value: string
+  value?: string
   /**
    * 检测源语言
    */
@@ -57,6 +35,8 @@ type TranslateDST = {
    */
   to?: string
 }
+
+type LanguageType = [code: string, serviceCode: string, supportCodes: Array<string>]
 
 type Translator = {
   /**
@@ -78,11 +58,22 @@ type Translator = {
   /**
    * 语种列表 { label: 名称, value: 编码 }
    */
-  languages: LanguageType[]
+  languages: Array<LanguageType>
   /**
    * 翻译函数 { value: 翻译文本, from: 源语言, to: 目标语言 } => 翻译处理函数
    */
-  translate: (value: string, from?: string, to?: string) => Promise<TranslateDST>
+  translate: (value: string, from?: string, to?: string) => Promise<TranslateEntity>
+}
+
+type Hotkey = {
+  /**
+   * 快捷键
+   */
+  hotkey?: string
+  /**
+   * command
+   */
+  command?: string
 }
 
 type Command = {

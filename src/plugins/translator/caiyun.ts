@@ -1,18 +1,8 @@
 import useServiceStore from '/src/store/service'
 
-const languages = [
-  { key: 'auto', label: '自动检测' },
-  { key: 'zh', label: '中文' },
-  { key: 'en', label: '英文' },
-  { key: 'ja', label: '日语' },
-  { key: 'fr', label: '法语' },
-  { key: 'ru', label: '俄语' },
-  { key: 'es', label: '西班牙语' },
-]
-
 const url = 'http://api.interpreter.caiyunai.com/v1/translator'
 
-const translate = async (value: string, from = 'zh', to = 'en'): Promise<TranslateDST> => {
+const translate = async (value: string, from = 'zh', to = 'en'): Promise<TranslateEntity> => {
   const serviceStore = useServiceStore()
   const { token } = serviceStore.get('caiyun')
   if (!token) {
@@ -55,6 +45,5 @@ export default <Translator>{
   icon: 'https://www.caiyunapp.com/imgs/xiaoyilogo.png',
   type: 'token',
   interval: 0,
-  languages: languages,
   translate: translate,
 }
