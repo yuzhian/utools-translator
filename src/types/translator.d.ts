@@ -38,6 +38,21 @@ type TranslateEntity = {
 
 type LanguageType = [code: string, serviceCode: string, supportCodes: Array<string>]
 
+type LanguageOption = {
+  /**
+   * 语言代码
+   */
+  key: string
+  /**
+   * 语言名称
+   */
+  label: string
+  /**
+   * 支持的服务
+   */
+  services: Array<string>
+}
+
 type Translator = {
   /**
    * 名称

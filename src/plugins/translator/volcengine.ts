@@ -31,7 +31,7 @@ const translate = async (value: string, from = 'zh', to = 'en'): Promise<Transla
   }
   return {
     value: json.TranslationList[0].Translation,
-    from: '',
+    from: undefined,
     to: json.TranslationList[0].DetectedSourceLanguage,
   }
 }

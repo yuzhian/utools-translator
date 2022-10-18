@@ -15,7 +15,7 @@ export const languageLocale: Record<string, string> = Object.assign(cldrzh.main.
 
 // 服务-支持语言 : [{ key: service, lks: [languageKey] }]
 const tks = Object.entries(translators).map(([key, translator]) => ({ key, lks: translator.languages.map(([k]) => k) }))
-export const languageOptions: Array<{ key: string; label: string; services: Array<string> }> = Object.entries(languageLocale)
+export const languageOptions: Array<LanguageOption> = Object.entries(languageLocale)
   // [key, label] => { key, label, services }
   .map(([key, label]) => ({ key, label, services: tks.filter(({ lks }) => lks.includes(key)).map(({ key }) => key) }))
   // 过滤掉没有服务支持的语言

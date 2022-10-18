@@ -3,12 +3,16 @@ import { defineStore } from 'pinia'
 import * as storage from '/src/plugins/storage'
 
 export default defineStore('languages', () => {
-  const languages = reactive<string[]>(restore())
+  const languages = reactive<Record<string, string[]>>(JSON.parse(storage.getItem('languages') || '{}'))
 
-  function restore() {
-    const str = storage.getItem('languages')
-    return str ? JSON.parse(str) : ['zh', 'en', 'ja', 'ko', 'fr', 'zh-Hant']
+  function get(key: string) {
+    return languages[key] || (languages[key] = ['zh', 'en'])
   }
 
-  return { languages }
+  function push(key: string, language: string) {
+    languages[key] = [language].concat((languages[key] || []).filter(item => item !== language)).slice(0, 3)
+    storage.setItem('languages', JSON.stringify(languages))
+  }
+
+  return { get, push }
 })
