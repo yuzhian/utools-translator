@@ -13,7 +13,7 @@ import LanguageSelector from "/src/views/selector/LanguageSelector.tsx";
 import ComponentHub, { ComponentHubExposed } from "/src/views/panel/ComponentHub.tsx";
 import RecordsPanel from "/src/views/panel/RecordsPanel.tsx";
 import SettingPanel from "/src/views/panel/setting/SettingPanel.tsx";
-import GeneralSetting from "/src/views/panel/setting/GeneralSetting.tsx";
+import GeneralSetting from "/src/views/panel/setting/general/GeneralSetting.tsx";
 import ServiceSetting from "/src/views/panel/setting/ServiceSetting.tsx";
 import ShortcutSetting from "/src/views/panel/setting/ShortcutSetting.tsx";
 
