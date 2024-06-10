@@ -16,7 +16,10 @@ const servicesState = atom<Array<ServiceProps>>({
  */
 export const servicePropsListState = selector<Array<ServiceProps>>({
   key: "servicePropsListState",
-  get: ({ get }) => (Object.keys(serviceModules).map(key => get(servicesState).find(item => item.key === key) ?? ({ key: key, enable: true }))),
+  get: ({ get }) => ([
+    ...get(servicesState).filter(props => Object.keys(serviceModules).includes(props.key)),
+    ...Object.keys(serviceModules).filter(key => !get(servicesState).map(props => props.key).includes(key)).map(key => ({ key: key, enable: true })),
+  ]),
   set: ({ set }, newValue) => {
     if ((newValue instanceof DefaultValue) || !newValue) return
     set(servicesState, newValue)
