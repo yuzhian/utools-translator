@@ -1,6 +1,23 @@
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { Collapse, IconButton, List, ListItem, ListItemButton, ListItemText, ListSubheader, Switch, TextField } from "@mui/material";
+import { closestCenter, DndContext, DragEndEvent, PointerSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core";
+import { arrayMove, horizontalListSortingStrategy, SortableContext, useSortable } from "@dnd-kit/sortable";
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import { CSS } from "@dnd-kit/utilities";
+import {
+  Button,
+  ButtonGroup,
+  ButtonProps,
+  Collapse,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  ListSubheader,
+  Switch,
+  TextField
+} from "@mui/material";
 import { Cancel, KeyboardArrowDown } from "@mui/icons-material";
 import Message from "/src/components/Message";
 import { GlobalProps, globalPropsState } from "/src/store/global";
@@ -60,6 +77,7 @@ const GeneralSetting = () => {
 
 const LanguagePreferences = ({ preferences, onChange }: { preferences: string[], onChange: (languages: string[]) => void }) => {
   const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState("")
 
   const handleAdd = (languageKey: string) => {
     if (preferences.length >= 4) {
@@ -74,23 +92,38 @@ const LanguagePreferences = ({ preferences, onChange }: { preferences: string[],
     onChange(preferences.filter(item => item !== languageKey))
   }
 
+  // 处理拖拽
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return
+    const index = (id: UniqueIdentifier) => preferences.findIndex(key => id === key)
+    onChange(arrayMove(preferences, index(active.id), index(over.id)))
+  }
+
+  const SortableButtonItem = ({ ...props }: ButtonProps) => {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: props.value?.toString() ?? "" })
+    return <Button ref={setNodeRef} {...attributes} {...listeners} sx={{ transform: CSS.Transform.toString(transform), transition }} {...props} />
+  }
+
   return <>
     <ListItem>
-      <ListItemText primary="语言偏好顺序" />
-      {/* 已选 */}
-      <List sx={{ display: "inline-block" }}>
-        {preferences.map(languageKey =>
-          <ListItem key={languageKey} sx={{ display: "inline-block", width: "auto" }} secondaryAction={
-            <IconButton edge="end" size="small" onClick={() => handleDelete(languageKey)}>
-              <Cancel fontSize="small" />
-            </IconButton>
-          } disablePadding>
-            <ListItemButton>{getChineseByKey(languageKey)}</ListItemButton>
-          </ListItem>
-        )}
-      </List>
+      {/* 左侧描述文本 */}
+      <ListItemText primary="语言优先级列表" />
 
-      {/* 可选 */}
+      {/* 右侧已选 */}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToHorizontalAxis]}>
+        <SortableContext items={preferences.map(id => ({ id }))} strategy={horizontalListSortingStrategy}>
+          <ButtonGroup variant="outlined">
+            {preferences.map(languageKey =>
+              <SortableButtonItem key={languageKey} value={languageKey} variant="text" color="inherit" endIcon={
+                <Cancel fontSize="small" onClick={() => handleDelete(languageKey)} />
+              }>{getChineseByKey(languageKey)}</SortableButtonItem>
+            )}
+          </ButtonGroup>
+        </SortableContext>
+      </DndContext>
+
+      {/* 右侧可选 */}
       <IconButton onClick={() => setOpen(!open)}>
         <KeyboardArrowDown sx={{
           transition: theme => theme.transitions.create("transform", { duration: theme.transitions.duration.shortest }),
@@ -99,13 +132,17 @@ const LanguagePreferences = ({ preferences, onChange }: { preferences: string[],
       </IconButton>
     </ListItem>
 
+    {/* 下拉更多列表 */}
     <Collapse in={open} timeout="auto" unmountOnExit sx={{ margin: "0 24px" }}>
+      <TextField value={search} variant="standard" fullWidth onChange={event => setSearch(event.target.value)} />
       <List>
-        {languages.slice(1).filter(({ key }) => !preferences.includes(key)).map(({ key, chinese }) => (
-          <ListItemButton key={key} onClick={() => handleAdd(key)} sx={{ display: "inline-block" }}>
+        {languages.slice(1)
+          .filter(({ key }) => !preferences.includes(key))
+          .filter(item => item.chinese.includes(search))
+          .map(({ key, chinese }) => <ListItemButton key={key} onClick={() => handleAdd(key)} sx={{ display: "inline-block" }}>
             {chinese}
-          </ListItemButton>
-        ))}
+          </ListItemButton>)
+        }
       </List>
     </Collapse>
   </>
