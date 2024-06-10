@@ -29,7 +29,7 @@ const ComponentHub = forwardRef<ComponentHubExposed, ComponentHubProps & AppBarP
         )}
       </Tabs>
 
-      <Popper open={!!active} anchorEl={anchorRef.current} transition placement="top">
+      <Popper open={!!active} anchorEl={anchorRef.current} transition placement="top" sx={{ zIndex: theme => theme.zIndex.appBar }}>
         {({ TransitionProps }) => <Fade {...TransitionProps}>
           <Paper ref={popperRef} elevation={0} tabIndex={0} sx={{ outline: "none" }}>
             {components?.map(({ key, name, element, fullScreen }) =>

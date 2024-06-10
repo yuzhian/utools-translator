@@ -1,6 +1,6 @@
 import { ReactNode, useMemo, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { Box, ClickAwayListener, Fade, Grid, IconButton, List, ListItemButton, Paper, Popper, Tab, Tabs, useTheme } from "@mui/material";
+import { Box, ClickAwayListener, Fade, Grid, IconButton, List, ListItemButton, Paper, Popper, Tab, Tabs } from "@mui/material";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import languages, { getChineseByKey, getSupportsByService } from "/src/plugins/language";
 import { useSubscription } from "/src/plugins/action";
@@ -112,7 +112,6 @@ const LanguageTabs = ({ value, supports, onClick, onExpand, endpoint, expand, au
   // 组件内缓存一份语言使用记录, 当在最近使用(缓存已有)的语言内切换时, 不修改组件顺序
   const languageRecords = useRecoilValue(languageRecordsReadonlyState(endpoint))
   const [languageCaches, setLanguageCaches] = useState(auto ? ["auto", ...languageRecords] : languageRecords)
-  const theme = useTheme()
 
   const getLabel = (langKey: string) => {
     // 检测原文语言
@@ -147,7 +146,7 @@ const LanguageTabs = ({ value, supports, onClick, onExpand, endpoint, expand, au
     </Tabs>
     <IconButton onClick={() => onExpand?.(endpoint === expand ? false : endpoint)}>
       <KeyboardArrowDown sx={{
-        transition: theme.transitions.create("transform", { duration: theme.transitions.duration.shortest }),
+        transition: theme => theme.transitions.create("transform", { duration: theme.transitions.duration.shortest }),
         transform: endpoint === expand ? "rotate(180deg)" : "rotate(0deg)"
       }} />
     </IconButton>

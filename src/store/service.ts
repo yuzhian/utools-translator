@@ -45,5 +45,5 @@ export const enabledServiceKeysState = selector<Array<string>>({
 export const currentServiceKeyState = atom<string>({
   key: "currentServiceKeyState",
   default: Object.keys(serviceModules)[0],
-  effects: [persistence(`service`)]
+  effects: [persistence("service")]
 })

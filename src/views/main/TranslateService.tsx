@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { intersection } from "lodash";
 import { franc } from "franc";
-import { Alert, LinearProgress, Paper, PaperProps } from "@mui/material";
+import { Alert, Box, CircularProgress, Paper, PaperProps } from "@mui/material";
 import { translate } from "/src/plugins/service";
 import { getSupportsByService } from "/src/plugins/language";
 import { useSubscription } from "/src/plugins/action";
@@ -95,8 +95,11 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
   } : {})
 
   return <Paper {...props}>
+    {loading && <Box display="flex" justifyContent="center" alignItems="center" position="absolute" top={0} bottom={0} left={0} right={0} zIndex={1}
+      bgcolor={theme => theme.palette.background.default}>
+      <CircularProgress />
+    </Box>}
     {errText && <Alert severity="warning">{errText}</Alert>}
-    {loading && <LinearProgress />}
     {dstText}
   </Paper>
 })

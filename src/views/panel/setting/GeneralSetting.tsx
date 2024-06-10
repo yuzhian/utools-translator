@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { Collapse, IconButton, List, ListItem, ListItemButton, ListItemText, ListSubheader, Switch, TextField, useTheme } from "@mui/material";
+import { Collapse, IconButton, List, ListItem, ListItemButton, ListItemText, ListSubheader, Switch, TextField } from "@mui/material";
 import { Cancel, KeyboardArrowDown } from "@mui/icons-material";
 import Message from "/src/components/Message";
 import { GlobalProps, globalPropsState } from "/src/store/global";
@@ -60,7 +60,6 @@ const GeneralSetting = () => {
 
 const LanguagePreferences = ({ preferences, onChange }: { preferences: string[], onChange: (languages: string[]) => void }) => {
   const [open, setOpen] = useState(false)
-  const theme = useTheme()
 
   const handleAdd = (languageKey: string) => {
     if (preferences.length >= 4) {
@@ -94,7 +93,7 @@ const LanguagePreferences = ({ preferences, onChange }: { preferences: string[],
       {/* 可选 */}
       <IconButton onClick={() => setOpen(!open)}>
         <KeyboardArrowDown sx={{
-          transition: theme.transitions.create("transform", { duration: theme.transitions.duration.shortest }),
+          transition: theme => theme.transitions.create("transform", { duration: theme.transitions.duration.shortest }),
           transform: open ? "rotate(0deg)" : "rotate(90deg)"
         }} />
       </IconButton>

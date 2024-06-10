@@ -77,7 +77,7 @@ const App = () => {
 
     {/* 底部附加功能 */}
     <ComponentHub ref={componentHubRef} position="absolute" elevation={0}
-      sx={{ bgcolor: "background.default", top: "auto", bottom: 0, zIndex: (theme) => theme.zIndex.appBar + 1 }}
+      sx={{ top: "auto", bottom: 0, bgcolor: theme => theme.palette.background.default, zIndex: theme => theme.zIndex.appBar + 1 }}
       components={[
         {
           key: "setting", name: "设置", element: <SettingPanel components={[
