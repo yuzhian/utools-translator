@@ -45,6 +45,7 @@ const App = () => {
   window.utools?.onPluginEnter(({ type, payload }) => {
     if (type !== "over") return
     if (!globalProps.autoTranslateOnPluginEnter) return
+    componentHubRef.current?.setActive(false)
     updateSrcText(payload).then(translate)
   })
 
