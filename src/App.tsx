@@ -1,6 +1,6 @@
 import { createRef, RefObject, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { useShortcutEmit } from "/src/plugins/action";
+import { useShortcutEmit, useSubscription } from "/src/plugins/action";
 import { currentServiceKeyState, enabledServiceKeysState } from "/src/store/service.ts";
 import { keybindingActionMapState } from "/src/store/action.ts";
 import { globalPropsState } from "/src/store/global.ts";
@@ -44,27 +44,32 @@ const App = () => {
   // 载入触发翻译
   window.utools?.onPluginEnter(({ type, payload }) => {
     if (type !== "over") return
-    if (!globalProps.autoTranslateOnPluginEnter) return
-    componentHubRef.current?.setActive(false)
-    updateSrcText(payload).then(translate)
+    updateSrcText(payload).then(src => {
+      componentHubRef.current?.setActive(false)
+      globalProps.autoTranslate && translate(src)
+    })
   })
 
   // 按快捷键时, 发布对应的事件
   useShortcutEmit(window, keybindingActionMap)
+  // 订阅操作事件
+  useSubscription({
+    "translate": () => translate({})
+  })
 
   return <>
     <SelectorBar position="relative" elevation={0} sx={{ bgcolor: "background.default" }}>
       {/* 服务切换 */}
-      <ServiceSelector onChange={(value) => translate({}, value)} />
+      <ServiceSelector onChange={(value) => globalProps.autoTranslate && translate({}, value)} />
       {/* 语言切换 */}
-      <LanguageSelector onChange={(value) => translate(value)} />
+      <LanguageSelector onChange={(value) => globalProps.autoTranslate && translate(value)} />
     </SelectorBar>
 
     <MainContainer spacing={1} p={1} mt={0} maxHeight="calc(100vh - 144px)" overflow="auto">
       {/* 左侧输入框, 防抖后执行翻译 */}
-      <InputBox value={srcText} wait={globalProps.waitOnInputTranslate} limit={5000} fullWidth multiline minRows={10} size="small"
+      <InputBox value={srcText} wait={globalProps.inputDebounceWait} limit={5000} fullWidth multiline minRows={10} size="small"
         onChange={value => setSrcText(value)}
-        onDebounced={value => globalProps.autoTranslateOnInput && translate({ srcText: value })}
+        onDebounced={value => globalProps.autoTranslate && translate({ srcText: value })}
       />
       {/* 右侧结果框, 一组服务组件, 显示当前匹配的服务. 提供了翻译函数 */}
       {enabledServiceKeys.map(serviceKey => (

@@ -3,6 +3,7 @@ export const allActions = [
     key: "service",
     text: "服务",
     actions: [
+      { key: "translate", text: "执行翻译", preset: "Control+Enter" },
       { key: "serviceNext", text: "下一个服务", preset: "Tab" },
       { key: "servicePrev", text: "上一个服务", preset: "Shift+Tab" }
     ]

@@ -13,38 +13,31 @@ const GeneralSetting = () => {
   return <List>
     <ListSubheader>自动翻译</ListSubheader>
 
-    <SettingItem title="进入插件时自动翻译">
+    <SettingItem primary="自动翻译" secondary="输入 | 切换服务 | 切换语言 | 进入应用时，自动执行翻译">
       <Switch
-        checked={globalProps.autoTranslateOnPluginEnter}
-        onChange={event => updatePartial({ autoTranslateOnPluginEnter: event.target.checked })}
+        checked={globalProps.autoTranslate}
+        onChange={event => updatePartial({ autoTranslate: event.target.checked })}
       />
     </SettingItem>
 
-    <SettingItem title="输入自动翻译">
-      <Switch
-        checked={globalProps.autoTranslateOnInput}
-        onChange={event => updatePartial({ autoTranslateOnInput: event.target.checked })}
-      />
-    </SettingItem>
-
-    <SettingItem title="输入自动翻译延迟(ms)">
+    <SettingItem primary="输入防抖" secondary="毫秒，自动翻译启用时生效">
       <TextField
-        value={globalProps.waitOnInputTranslate}
+        value={globalProps.inputDebounceWait}
         type="number"
         variant="standard"
-        onChange={event => updatePartial({ waitOnInputTranslate: Number(event.target.value) })}
+        onChange={event => updatePartial({ inputDebounceWait: Number(event.target.value) })}
       />
     </SettingItem>
 
-    <ListSubheader>其他配置</ListSubheader>
-
-    <SettingItem title="语言优先级列表" collapse={<PreferencesOptional preferences={globalProps.languagePreferences}
-      onChange={value => updatePartial({ languagePreferences: value })} />}>
+    <SettingItem primary="语言优先级列表" secondary="若目标语言与原文语言一致，按优先级自动切换"
+      collapse={<PreferencesOptional preferences={globalProps.languagePreferences} onChange={value => updatePartial({ languagePreferences: value })} />}>
       <PreferencesSelected preferences={globalProps.languagePreferences}
         onChange={value => updatePartial({ languagePreferences: value })} />
     </SettingItem>
 
-    <SettingItem title="历史记录保留条数">
+    <ListSubheader>其他配置</ListSubheader>
+
+    <SettingItem primary="历史记录保留条数">
       <TextField
         value={globalProps.historyRecordCount}
         type="number"

@@ -3,16 +3,17 @@ import { Collapse, IconButton, ListItem, ListItemText } from "@mui/material";
 import { KeyboardArrowDown } from "@mui/icons-material";
 
 interface SettingItemProps {
-  title: string
+  primary: ReactNode
+  secondary?: ReactNode
   children?: ReactNode
   collapse?: ReactNode
 }
 
-const SettingItem = ({ title, children, collapse }: SettingItemProps) => {
+const SettingItem = ({ primary, secondary, children, collapse }: SettingItemProps) => {
   const [open, setOpen] = useState(false)
   return <>
     <ListItem>
-      <ListItemText primary={title} />
+      <ListItemText primary={primary} secondary={secondary} />
       {children}
       {collapse && <IconButton onClick={() => setOpen(!open)}>
         <KeyboardArrowDown sx={{
