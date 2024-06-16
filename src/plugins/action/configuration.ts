@@ -28,10 +28,10 @@ export const allActions = [
     key: "srcText",
     text: "原文",
     actions: [
-      { key: "srcInputFocus", text: "将光标置于输入框", preset: "Control+Shift+i" },
-      { key: "srcTextFromClipboard", text: "将剪贴板内容粘贴到输入框", preset: "Control+Shift+v" },
-      { key: "srcTextSentenceCase", text: "拆解变量文本并组成句子", preset: "Control+Shift+s" },
-      { key: "srcTextExtractComment", text: "提取注释中的文本并翻译", preset: "Control+Shift+e" }
+      { key: "srcInputFocus", text: "将光标置于输入框", preset: "Control+Shift+G" },
+      { key: "srcTextFromClipboard", text: "将剪贴板内容粘贴到输入框", preset: "Control+Shift+V" },
+      { key: "srcTextSentenceCase", text: "拆解变量文本并组成句子", preset: "Control+Shift+S" },
+      { key: "srcTextExtractComment", text: "提取注释中的文本并翻译", preset: "Control+Shift+E" }
     ]
   },
   {
