@@ -1,1 +1,66 @@
-<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#343041"/><path d="M49.152 16c-22.656 0-33.92 9.216-33.92 21.888 0 7.68 5.12 12.8 13.44 12.8 6.528 0 9.728-4.096 9.728-7.168 0-.768-.128-1.152-.128-1.152s-.768.384-2.176.384c-3.2 0-5.12-2.304-5.12-5.888 0-7.296 6.272-13.824 17.92-13.824 4.864 0 6.656.512 10.624 1.28 0 0-.128 1.92-.64 4.992L46.848 98.048c-1.664 9.856.128 13.952 9.6 13.952 5.248 0 7.296-1.28 7.296-1.28s-1.408-3.2.128-12.16l12.16-69.76c7.424 2.304 12.16 4.352 21.248 4.352 11.136 0 15.488-5.376 15.488-12.032 0-2.048-.768-3.584-1.408-4.224 0 0-4.608 2.048-12.032 2.048C73.984 18.944 63.872 16 49.152 16Z" fill="#fff"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="256"
+   height="256"
+   viewBox="0 0 67.733325 67.733325"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   sodipodi:docname="T.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#343041"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="true"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="false"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:lockguides="false"
+     showborder="true"
+     borderlayer="true"
+     inkscape:zoom="2.587745"
+     inkscape:cx="100.47358"
+     inkscape:cy="142.5952"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer2" />
+  <defs
+     id="defs2">
+    <color-profile
+       name="sRGB-IEC61966-2.1"
+       xlink:href="file:///C:/Windows/system32/spool/drivers/color/sRGB%20Color%20Space%20Profile.icm"
+       id="color-profile6954" />
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="icon"
+     style="display:inline">
+    <rect
+       style="display:inline;fill:#343041;fill-opacity:1;stroke-width:0.264583"
+       id="rect3763"
+       width="67.733322"
+       height="67.733322"
+       x="0"
+       y="0"
+       inkscape:label="bg" />
+    <path
+       d="m 31.834664,55.676786 q 0,3.996265 -7.78933,3.996265 -1.693332,0 -2.031999,-1.693333 -0.270933,-1.761066 -0.270933,-4.334931 0,-2.573865 0.338667,-5.486397 0.406399,-2.980265 1.015999,-6.434664 1.151466,-6.637863 3.251198,-14.291726 2.167466,-7.721596 4.267198,-11.921061 -4.267198,0.270934 -8.466662,1.557866 -4.199465,1.2192 -5.96053,1.761066 -1.761066,0.474133 -2.912532,0.474133 -1.151466,0 -1.151466,-0.745066 0,-0.880533 1.354666,-2.573865 1.354666,-1.761066 3.860798,-3.522132 6.36693,-4.3349312 14.156259,-4.4026645 l 22.284256,0.2031999 q 1.828799,0 1.828799,1.4223993 0,0.4064003 -0.541867,1.4901323 -0.541866,1.016 -0.948266,2.235199 -0.880533,2.438399 -3.725331,2.438399 -2.777066,0 -13.34346,-0.4064 -0.270933,2.980265 -1.083733,7.653863 -0.8128,4.605864 -1.761066,10.092262 -2.302932,14.020793 -2.370665,22.487455 z"
+       id="path3737"
+       inkscape:label="text"
+       style="display:inline;font-size:67.7333px;line-height:10;font-family:'Leckerli One';-inkscape-font-specification:'Leckerli One';fill:#ffffff;stroke-width:0.264583" />
+  </g>
+</svg>
