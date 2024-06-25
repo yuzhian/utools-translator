@@ -7,7 +7,7 @@ type CaiyunTranslateResponse = {
   trans_type: string
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "彩云小译",
   authProps: [["token", "令牌", "password"]],
   translate: async ({ srcText, srcLang, dstLang }, { token } = {}) => {
@@ -34,5 +34,10 @@ export default <ServiceModule>{
       dstText: json.target,
       detLang: pair[0]
     }
-  }
+  },
+  tips: <>
+
+  </>
 }
+
+export default service

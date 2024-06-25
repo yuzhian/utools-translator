@@ -49,7 +49,7 @@ const sign = (
   return `${algorithm} Credential=${secretId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "腾讯翻译",
   authProps: [
     ["secretId", "SecretId", "text"],
@@ -78,5 +78,8 @@ export default <ServiceModule>{
       detLang: json.Response.Source,
       errText: json.Response.Target
     }
-  }
+  },
+  tips: <></>
 }
+
+export default service

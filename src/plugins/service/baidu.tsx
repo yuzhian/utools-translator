@@ -9,7 +9,7 @@ type BaiduTranslateResponse = {
   trans_result: { src: string; dst: string }[]
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "百度翻译",
   authProps: [
     ["appid", "APP ID", "text"],
@@ -32,5 +32,8 @@ export default <ServiceModule>{
       detLang: json.from,
       errText: ""
     }
-  }
+  },
+  tips: <></>
 }
+
+export default service

@@ -1,10 +1,10 @@
 import { getCodeByKey, getKeyByCode } from "../language";
 
-const modules: Record<string, { default: ServiceModule }> = import.meta.glob("/src/plugins/service/*.(ts|js)", { eager: true })
+const modules: Record<string, { default: ServiceModule }> = import.meta.glob("/src/plugins/service/*.(ts|js|tsx|jsx)", { eager: true })
 
 export const serviceModules: Record<string, ServiceModule> = Object.fromEntries(
   Object.entries(modules).map(([key, { default: serviceModule }]) => [
-    key.match(/\/src\/plugins\/service\/(\w+)\.(ts|js)/)?.[1],
+    key.match(/\/src\/plugins\/service\/(\w+)\.(ts|js|tsx|jsx)/)?.[1],
     serviceModule
   ])
 )

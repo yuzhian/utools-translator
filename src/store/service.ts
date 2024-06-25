@@ -28,7 +28,11 @@ export const servicePropsListState = selector<Array<ServiceProps>>({
 
 export const servicePropsState = selectorFamily<ServiceProps | undefined, string>({
   key: "servicePropsState",
-  get: (serviceKey) => ({ get }) => get(servicePropsListState).find(({ key }) => key === serviceKey)
+  get: (serviceKey) => ({ get }) => get(servicePropsListState).find(({ key }) => key === serviceKey),
+  set: (serviceKey) => ({ set }, newValue) => {
+    if ((newValue instanceof DefaultValue) || !newValue) return
+    set(servicePropsListState, (list) => list.map(props => props.key === serviceKey ? newValue : props))
+  }
 })
 
 /**

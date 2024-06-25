@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute } from "react";
+import { HTMLInputTypeAttribute, ReactNode } from "react";
 
 declare global {
   type EndpointType = "src" | "dst"
@@ -53,6 +53,7 @@ declare global {
     name: string
     authProps: AuthProp[]
     translate: (data: TranslateProps, authData: AuthData) => Promise<TranslateResult>
+    tips?: ReactNode
   }
 
   // 翻译组件

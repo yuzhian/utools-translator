@@ -73,7 +73,7 @@ function sign(
   return `${algorithm} Credential=${credential}/${scope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "火山翻译",
   authProps: [
     ["accessKeyId", "Access Key ID", "text"],
@@ -97,5 +97,8 @@ export default <ServiceModule>{
       dstText: json.TranslationList[0].Translation,
       detLang: json.TranslationList[0].DetectedSourceLanguage
     }
-  }
+  },
+  tips: <></>
 }
+
+export default service

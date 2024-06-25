@@ -24,7 +24,7 @@ function truncate(q: string) {
   return q.substring(0, 10) + len + q.substring(len - 10, len)
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "有道翻译",
   authProps: [
     ["appid", "应用ID", "text"],
@@ -58,5 +58,8 @@ export default <ServiceModule>{
       dstText: json.translation.join("\n"),
       detLang: pair[0]
     }
-  }
+  },
+  tips: <></>
 }
+
+export default service
