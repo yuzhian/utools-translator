@@ -1,65 +1,49 @@
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { cloneDeep, isEqual } from "lodash";
-import { Button, Card, CardContent, CardHeader, List, ListItem, Switch, TextField } from "@mui/material";
+import { Card, CardContent, CardHeader, Checkbox, List, ListItem, TextField } from "@mui/material";
 import { serviceModules } from "/src/plugins/service";
-import { servicePropsListState } from "/src/store/service";
-
+import { servicePropsState } from "/src/store/service";
 
 interface ServiceItemProps {
-  formItem: ServiceProps
-  onChange: (value: ServiceProps) => void
+  serviceKey: string
+  serviceModule: ServiceModule
 }
 
-const ServicePropsCard = ({ formItem, onChange }: ServiceItemProps) => {
-  const service = serviceModules[formItem.key]
-
-  const [nextAuthData, setNextAuthData] = useState(formItem.authData)
-  const originalAuthData = cloneDeep(formItem.authData)
-
-  const handleChange = (value: Partial<ServiceProps>) => onChange(Object.assign({}, formItem, value))
-  const handleInputChange = (field: string) => (e: ChangeEvent<HTMLInputElement>) => {
-    setNextAuthData({ ...nextAuthData, [field]: e.target.value })
+const ServicePropsCard = ({ serviceKey, serviceModule: { name, authProps } }: ServiceItemProps) => {
+  const [serviceProps, setServiceProps] = useRecoilState(servicePropsState(serviceKey))
+  if (!serviceProps) {
+    return null
   }
-  const handleResetAuthData = () => {
-    handleChange({ authData: originalAuthData })
-    setNextAuthData(originalAuthData)
-  }
+  const [tempAuthData, setTempAuthData] = useState<AuthData>(serviceProps.authData ?? {})
+  const updatePartial = (value: Partial<ServiceProps>) => setServiceProps(Object.assign({}, serviceProps, value))
 
   return <ListItem>
     <Card variant="outlined" sx={{ width: "100%" }}>
-      <CardHeader title={service.name} titleTypographyProps={{ variant: "subtitle1" }} action={
-        <Switch onClick={e => e.stopPropagation()} checked={formItem.enable}
-          onChange={e => handleChange({ enable: e.target.checked })} />
-      } />
+      <CardHeader title={name} titleTypographyProps={{ variant: "subtitle1" }}
+        action={<Checkbox checked={serviceProps.enable} onChange={e => updatePartial({ enable: e.target.checked })} />} />
+
       <CardContent>
-        {service.authProps.map(([field, label, type]: AuthProp) => (
-          <TextField
-            key={field}
-            value={nextAuthData?.[field] ?? ""}
-            label={label}
-            type={type}
-            variant="standard"
-            autoComplete="off"
-            sx={{ mx: 1, width: "20em" }}
-            onChange={handleInputChange(field)}
-            onBlur={() => handleChange({ authData: nextAuthData })}
-          />
-        ))}
-        {originalAuthData && !isEqual(nextAuthData, originalAuthData) && <Button onClick={handleResetAuthData}>撤销</Button>}
+        {/* 认证信息 */}
+        {authProps.map(([field, label, type]: AuthProp) => <TextField
+          key={field}
+          value={tempAuthData?.[field] ?? ""}
+          type={type}
+          label={label}
+          variant="standard"
+          fullWidth
+          disabled={!serviceProps.enable}
+          onChange={e => setTempAuthData({ ...tempAuthData, [field]: e.target.value })}
+          onBlur={() => updatePartial({ authData: tempAuthData })}
+        />)}
       </CardContent>
     </Card>
   </ListItem>
 }
 
 const ServiceSetting = () => {
-  const [servicePropsList, setServicePropsList] = useRecoilState(servicePropsListState)
-  const handleChange = (index: number) => (newValue: ServiceProps) =>
-    setServicePropsList(preFormList => [...preFormList.slice(0, index), newValue, ...preFormList.slice(index + 1)])
-
   return <List>
-    {servicePropsList.map((formItem, index) => (
-      <ServicePropsCard key={formItem.key} formItem={formItem} onChange={handleChange(index)} />
+    {Object.entries(serviceModules).map(([serviceKey, serviceModule]) => (
+      <ServicePropsCard key={serviceKey} serviceKey={serviceKey} serviceModule={serviceModule} />
     ))}
   </List>
 }
