@@ -9,6 +9,10 @@ export const serviceModules: Record<string, ServiceModule> = Object.fromEntries(
   ])
 )
 
+export const defaultServiceProps: Array<ServiceProps> = Object.entries(serviceModules).map(([key, serviceModule]) => ({
+  key, enable: true, authData: {}, lastReset: 0, ...serviceModule.initProps
+}))
+
 /**
  * 供程序内调用的翻译函数, 用于屏蔽错误和编码转换. 具体功能如下:
  * - 拦截非法请求

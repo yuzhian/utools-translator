@@ -1,7 +1,6 @@
 import { ReactNode, useMemo, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { Box, ClickAwayListener, Fade, Grid, IconButton, List, ListItemButton, Paper, Popper, Tab, Tabs } from "@mui/material";
-import { KeyboardArrowDown } from "@mui/icons-material";
+import { Box, ClickAwayListener, Fade, Grid, List, ListItemButton, Paper, Popper, Tab, Tabs } from "@mui/material";
 import languages, { getChineseByKey, getSupportsByService } from "/src/plugins/language";
 import { useSubscription } from "/src/plugins/action";
 import { languageCurrentState, languageDetectState, languageRecordsReadonlyState } from "/src/store/language.ts";
@@ -9,6 +8,7 @@ import { currentServiceKeyState } from "/src/store/service.ts";
 import { globalPropsState } from "/src/store/global.ts";
 import { onEscape } from "/src/util/keyboard.ts";
 import { loopGet } from "/src/util/array.ts";
+import ExpandMore from "/src/components/ExpandMore.tsx";
 
 interface LanguageSelectorProps {
   onChange?: (params: Partial<LanguageProps>) => void
@@ -144,12 +144,7 @@ const LanguageTabs = ({ value, supports, onClick, onExpand, endpoint, expand, au
         <Tab key={langKey} value={langKey} label={getLabel(langKey)} disabled={auto ? false : !supports?.includes(langKey)} onClick={() => onClick?.(langKey)}
         />)}
     </Tabs>
-    <IconButton onClick={() => onExpand?.(endpoint === expand ? false : endpoint)}>
-      <KeyboardArrowDown sx={{
-        transition: theme => theme.transitions.create("transform", { duration: theme.transitions.duration.shortest }),
-        transform: endpoint === expand ? "rotate(180deg)" : "rotate(0deg)"
-      }} />
-    </IconButton>
+    <ExpandMore expand={endpoint === expand} onClick={() => onExpand?.(endpoint === expand ? false : endpoint)} />
   </Box>
 }
 

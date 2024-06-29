@@ -14,7 +14,7 @@ export interface GlobalProps {
   historyRecordCount: number
 }
 
-const dftProps = {
+const initProps = {
   autoTranslate: true,
   autoSwitchDstLang: true,
   inputDebounceWait: 1000,
@@ -24,13 +24,13 @@ const dftProps = {
 
 const globalState = atom<GlobalProps>({
   key: "globalState",
-  default: dftProps,
+  default: initProps,
   effects: [persistence("global")]
 })
 
 export const globalPropsState = selector<GlobalProps>({
   key: "globalPropsState",
-  get: ({ get }) => ({ ...dftProps, ...get(globalState) }),
+  get: ({ get }) => ({ ...initProps, ...get(globalState) }),
   set: ({ get, set }, props) => {
     if ((props instanceof DefaultValue) || !props) return
     set(globalState, { ...get(globalState), ...props })

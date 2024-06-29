@@ -27,6 +27,12 @@ declare global {
     errText: string | false
   }
 
+  type LanguageProps = SrcLang & DstLang
+
+  type TranslateProps = SrcText & LanguageProps
+
+  type TranslateResult = DstText & DetLang & Partial<ErrText>
+
   type AuthProp = [
     field: string,
     label: string,
@@ -35,23 +41,26 @@ declare global {
 
   type AuthData = Record<string, string>
 
-  type LanguageProps = SrcLang & DstLang
-
-  type TranslateProps = SrcText & LanguageProps
-
-  type TranslateResult = DstText & DetLang & Partial<ErrText>
+  interface ServiceInitProps {
+    block: boolean
+    reset: boolean
+    limit: number
+    usage: number
+  }
 
   // 配置文件, 存储形式
-  interface ServiceProps {
+  interface ServiceProps extends ServiceInitProps {
     key: string
     enable: boolean
-    authData?: AuthData
+    authData: AuthData
+    lastReset: number
   }
 
   // 翻译服务属性
   interface ServiceModule {
     name: string
     authProps: AuthProp[]
+    initProps: ServiceInitProps
     translate: (data: TranslateProps, authData: AuthData) => Promise<TranslateResult>
   }
 

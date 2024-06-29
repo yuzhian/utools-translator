@@ -1,13 +1,14 @@
 import { atom, DefaultValue, selector, selectorFamily } from "recoil";
 import persistence from "/src/util/persistence.ts";
-import { serviceModules } from "/src/plugins/service";
+import { defaultServiceProps, serviceModules } from "/src/plugins/service";
+import { keyBy, merge, pick } from "lodash";
 
 /**
  * 服务列表(存储)
  */
 const servicesState = atom<Array<ServiceProps>>({
   key: "servicesState",
-  default: Object.keys(serviceModules).map(key => ({ key: key, enable: true })),
+  default: [],
   effects: [persistence(`services`)]
 })
 
@@ -16,10 +17,7 @@ const servicesState = atom<Array<ServiceProps>>({
  */
 export const servicePropsListState = selector<Array<ServiceProps>>({
   key: "servicePropsListState",
-  get: ({ get }) => ([
-    ...get(servicesState).filter(props => Object.keys(serviceModules).includes(props.key)),
-    ...Object.keys(serviceModules).filter(key => !get(servicesState).map(props => props.key).includes(key)).map(key => ({ key: key, enable: true })),
-  ]),
+  get: ({ get }) => pickProps(defaultServiceProps, get(servicesState)),
   set: ({ set }, newValue) => {
     if ((newValue instanceof DefaultValue) || !newValue) return
     set(servicesState, newValue)
@@ -28,7 +26,11 @@ export const servicePropsListState = selector<Array<ServiceProps>>({
 
 export const servicePropsState = selectorFamily<ServiceProps | undefined, string>({
   key: "servicePropsState",
-  get: (serviceKey) => ({ get }) => get(servicePropsListState).find(({ key }) => key === serviceKey)
+  get: (serviceKey) => ({ get }) => get(servicePropsListState).find(({ key }) => key === serviceKey),
+  set: (serviceKey) => ({ set }, newValue) => {
+    if ((newValue instanceof DefaultValue) || !newValue) return
+    set(servicePropsListState, (list) => list.map(props => props.key === serviceKey ? newValue : props))
+  }
 })
 
 /**
@@ -47,3 +49,11 @@ export const currentServiceKeyState = atom<string>({
   default: Object.keys(serviceModules)[0],
   effects: [persistence("service")]
 })
+
+/**
+ * 组装配置参数
+ */
+function pickProps(dft: ServiceProps[], cfg: ServiceProps[]): Array<ServiceProps> {
+  const cfgMap = keyBy(cfg, "key")
+  return dft.map(item => (pick(merge({}, item, cfgMap[item.key]), Object.keys(item)) as ServiceProps))
+}

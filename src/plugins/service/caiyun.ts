@@ -7,9 +7,15 @@ type CaiyunTranslateResponse = {
   trans_type: string
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "彩云小译",
   authProps: [["token", "令牌", "password"]],
+  initProps: {
+    block: true,
+    reset: false,
+    limit: 1000000,
+    usage: 0,
+  },
   translate: async ({ srcText, srcLang, dstLang }, { token } = {}) => {
     // UTC 时间
     const response = await fetch(url, {
@@ -36,3 +42,5 @@ export default <ServiceModule>{
     }
   }
 }
+
+export default service

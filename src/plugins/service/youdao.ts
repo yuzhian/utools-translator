@@ -24,12 +24,18 @@ function truncate(q: string) {
   return q.substring(0, 10) + len + q.substring(len - 10, len)
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "有道翻译",
   authProps: [
     ["appid", "应用ID", "text"],
     ["secret", "应用秘钥", "password"]
   ],
+  initProps: {
+    block: true,
+    reset: false,
+    limit: 2000000,
+    usage: 0,
+  },
   translate: async ({ srcText, srcLang, dstLang }, { appid, secret } = {}) => {
     const salt = Date.now().toString()
     const curtime = Math.round(Date.now() / 1000).toString()
@@ -60,3 +66,5 @@ export default <ServiceModule>{
     }
   }
 }
+
+export default service

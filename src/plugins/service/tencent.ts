@@ -49,12 +49,18 @@ const sign = (
   return `${algorithm} Credential=${secretId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "腾讯翻译",
   authProps: [
     ["secretId", "SecretId", "text"],
     ["secretKey", "SecretKey", "password"]
   ],
+  initProps: {
+    block: true,
+    reset: true,
+    limit: 5000000,
+    usage: 0,
+  },
   translate: async ({ srcText, srcLang, dstLang }, { secretId, secretKey } = {}) => {
     const date = dayjs().utc()
     const body = JSON.stringify({ SourceText: srcText, Source: srcLang, Target: dstLang, ProjectId: 0 })
@@ -80,3 +86,5 @@ export default <ServiceModule>{
     }
   }
 }
+
+export default service

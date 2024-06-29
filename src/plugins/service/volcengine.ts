@@ -73,12 +73,18 @@ function sign(
   return `${algorithm} Credential=${credential}/${scope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "火山翻译",
   authProps: [
     ["accessKeyId", "Access Key ID", "text"],
     ["secretAccessKey", "Secret Access Key", "password"]
   ],
+  initProps: {
+    block: true,
+    reset: true,
+    limit: 2000000,
+    usage: 0,
+  },
   translate: async ({ srcText, srcLang, dstLang }, { accessKeyId, secretAccessKey } = {}): Promise<TranslateResult> => {
     const now = dayjs().utc().format("YYYYMMDDTHHmmss[Z]")
     const method = "POST"
@@ -99,3 +105,5 @@ export default <ServiceModule>{
     }
   }
 }
+
+export default service

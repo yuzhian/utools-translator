@@ -9,12 +9,18 @@ type BaiduTranslateResponse = {
   trans_result: { src: string; dst: string }[]
 }
 
-export default <ServiceModule>{
+const service: ServiceModule = {
   name: "百度翻译",
   authProps: [
     ["appid", "APP ID", "text"],
     ["secret", "密钥", "password"]
   ],
+  initProps: {
+    block: true,
+    reset: true,
+    limit: 1000000,
+    usage: 0,
+  },
   translate: async ({ srcText, srcLang, dstLang }, { appid, secret } = {}) => {
     const salt = Date.now().toString()
     const sign = md5(appid + srcText + salt + secret).toString()
@@ -34,3 +40,5 @@ export default <ServiceModule>{
     }
   }
 }
+
+export default service

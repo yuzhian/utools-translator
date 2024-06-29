@@ -1,67 +1,86 @@
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { cloneDeep, isEqual } from "lodash";
-import { Button, Card, CardContent, CardHeader, List, ListItem, Switch, TextField } from "@mui/material";
+import { Box, Card, CardContent, Checkbox, Grid, InputAdornment, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { serviceModules } from "/src/plugins/service";
-import { servicePropsListState } from "/src/store/service";
-
+import { servicePropsState } from "/src/store/service";
+import { GppGoodOutlined, RepeatOneSharp, RepeatSharp, ShieldOutlined } from "@mui/icons-material";
 
 interface ServiceItemProps {
-  formItem: ServiceProps
-  onChange: (value: ServiceProps) => void
+  serviceKey: string
+  serviceModule: ServiceModule
 }
 
-const ServicePropsCard = ({ formItem, onChange }: ServiceItemProps) => {
-  const service = serviceModules[formItem.key]
-
-  const [nextAuthData, setNextAuthData] = useState(formItem.authData)
-  const originalAuthData = cloneDeep(formItem.authData)
-
-  const handleChange = (value: Partial<ServiceProps>) => onChange(Object.assign({}, formItem, value))
-  const handleInputChange = (field: string) => (e: ChangeEvent<HTMLInputElement>) => {
-    setNextAuthData({ ...nextAuthData, [field]: e.target.value })
-  }
-  const handleResetAuthData = () => {
-    handleChange({ authData: originalAuthData })
-    setNextAuthData(originalAuthData)
+const ServiceItem = ({ serviceKey, serviceModule: { name, authProps } }: ServiceItemProps) => {
+  const [serviceProps, setServiceProps] = useRecoilState(servicePropsState(serviceKey))
+  if (!serviceProps) {
+    return null
   }
 
-  return <ListItem>
-    <Card variant="outlined" sx={{ width: "100%" }}>
-      <CardHeader title={service.name} titleTypographyProps={{ variant: "subtitle1" }} action={
-        <Switch onClick={e => e.stopPropagation()} checked={formItem.enable}
-          onChange={e => handleChange({ enable: e.target.checked })} />
-      } />
-      <CardContent>
-        {service.authProps.map(([field, label, type]: AuthProp) => (
-          <TextField
-            key={field}
-            value={nextAuthData?.[field] ?? ""}
-            label={label}
-            type={type}
-            variant="standard"
-            autoComplete="off"
-            sx={{ mx: 1, width: "20em" }}
-            onChange={handleInputChange(field)}
-            onBlur={() => handleChange({ authData: nextAuthData })}
-          />
-        ))}
-        {originalAuthData && !isEqual(nextAuthData, originalAuthData) && <Button onClick={handleResetAuthData}>撤销</Button>}
-      </CardContent>
-    </Card>
-  </ListItem>
+  const updatePartial = (value: Partial<ServiceProps>) => setServiceProps(Object.assign({}, serviceProps, value))
+
+  const [auth, setAuth] = useState<AuthData>(serviceProps.authData ?? {})
+  const [limit, setLimit] = useState<number>(serviceProps.limit ?? 0)
+  const [usage, setUsage] = useState<number>(serviceProps.usage ?? 0)
+
+  return <Card variant="outlined" sx={{ m: 1 }}>
+    <CardContent sx={{ '& .MuiTextField-root': { my: 1 } }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography>
+          {name}
+        </Typography>
+        <Switch checked={serviceProps.enable} onChange={e => updatePartial({ enable: e.target.checked })} />
+      </Box>
+
+      {authProps.map(([field, label, type]: AuthProp) => <TextField
+        key={field}
+        label={label}
+        value={auth?.[field] ?? ""}
+        type={type}
+        variant="standard"
+        fullWidth
+        disabled={!serviceProps.enable}
+        onChange={e => setAuth({ ...auth, [field]: e.target.value })}
+        onBlur={() => updatePartial({ authData: auth })}
+      />)}
+
+      <Grid container spacing={1}>
+        <Grid item xs={6}>
+          <TextField label="限制字符数" value={limit} type="number" variant="standard" fullWidth
+            onChange={e => setLimit(Number(e.target.value))} onBlur={() => updatePartial({ limit: limit })}
+            disabled={!serviceProps.enable || !serviceProps.block}
+            InputProps={{
+              startAdornment: <Tooltip title={serviceProps.block ? "字符超出时阻止请求" : "字符超出时什么都不做"}>
+                <Checkbox checked={serviceProps.block} icon={<ShieldOutlined />} checkedIcon={<GppGoodOutlined />}
+                  onChange={e => updatePartial({ block: e.target.checked })}
+                  disabled={!serviceProps.enable} />
+              </Tooltip>,
+              endAdornment: <InputAdornment position="end">字符</InputAdornment>,
+            }} />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField label="已用字符数" value={usage} type="number" variant="standard" fullWidth
+            onChange={e => setUsage(Number(e.target.value))} onBlur={() => updatePartial({ usage: usage })}
+            disabled={!serviceProps.enable}
+            InputProps={{
+              startAdornment: <Tooltip title={serviceProps.reset ? "月初自动重置" : "保持使用字符数不变"}>
+                <Checkbox checked={serviceProps.reset} icon={<RepeatSharp />} checkedIcon={<RepeatOneSharp />}
+                  onChange={e => updatePartial({ reset: e.target.checked })}
+                  disabled={!serviceProps.enable} />
+              </Tooltip>,
+              endAdornment: <InputAdornment position="end">字符</InputAdornment>,
+            }} />
+        </Grid>
+      </Grid>
+    </CardContent>
+  </Card>
 }
 
 const ServiceSetting = () => {
-  const [servicePropsList, setServicePropsList] = useRecoilState(servicePropsListState)
-  const handleChange = (index: number) => (newValue: ServiceProps) =>
-    setServicePropsList(preFormList => [...preFormList.slice(0, index), newValue, ...preFormList.slice(index + 1)])
-
-  return <List>
-    {servicePropsList.map((formItem, index) => (
-      <ServicePropsCard key={formItem.key} formItem={formItem} onChange={handleChange(index)} />
-    ))}
-  </List>
+  return <Box>
+    {Object.entries(serviceModules).map(([serviceKey, serviceModule]) =>
+      <ServiceItem key={serviceKey} serviceKey={serviceKey} serviceModule={serviceModule} />
+    )}
+  </Box>
 }
 
 export default ServiceSetting

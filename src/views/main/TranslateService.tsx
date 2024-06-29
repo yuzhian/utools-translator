@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { intersection } from "lodash";
 import { franc } from "franc";
@@ -10,6 +10,7 @@ import { servicePropsState } from "/src/store/service.ts";
 import { globalPropsState } from "/src/store/global.ts";
 import { languageCurrentState, languageDetectState } from "/src/store/language.ts";
 import { recordState } from "/src/store/record.ts";
+import { execMonthly } from "/src/util/timer.ts";
 import throttle from "/src/util/throttle";
 import Message from "/src/components/Message";
 
@@ -20,22 +21,31 @@ interface ServiceComponentProps extends PaperProps {
 }
 
 const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ serviceKey, enable, delay = 1000, ...props }, ref) => {
-  const serviceProps = useRecoilValue(servicePropsState(serviceKey))
-  const throttledTranslate = useRef(throttle(translate(serviceKey), delay))
+  const [serviceProps, setServiceProps] = useRecoilState(servicePropsState(serviceKey))
   const globalProps = useRecoilValue(globalPropsState)
+  if (!serviceProps) {
+    return null
+  }
 
   const [dstText, setDstText] = useState("")
   const [errText, setErrText] = useState("")
   const [loading, setLoading] = useState(false)
 
-  // 翻译参数取值 + 翻译前后修改
   const srcLang = useRecoilValue(languageCurrentState("src"))
   const [dstLang, setDstLang] = useRecoilState(languageCurrentState("dst"))
   const setDetLang = useSetRecoilState(languageDetectState)
   const putRecord = useSetRecoilState(recordState)
 
-  // 在翻译的基础上, 处理翻译前后显示数据改动
+  // translate-翻译; throttledTranslate-节流翻译; enhancedTranslate-逻辑处理, 检查参数, 转换语言, 历史记录等
+  const throttledTranslate = useRef(throttle(translate(serviceKey), delay))
   const enhancedTranslate = async (props: SrcText & Partial<LanguageProps>) => {
+    if (serviceProps.block && serviceProps.usage + props.srcText.length > serviceProps.limit) {
+      const err = `当前服务可使用字符将要达到设置上限(${serviceProps.usage}/${serviceProps.limit}), 请切换服务后继续使用`
+      setDetLang("");
+      setDstText("");
+      setErrText(err);
+      return { dstText: "", detLang: "", errText: err }
+    }
     // 补全参数, 检测语言并根据优先级切换
     const source = props.srcLang ?? srcLang
     const detect = franc(props.srcText, { minLength: 2, only: globalProps.languagePreferences })
@@ -43,7 +53,7 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
       srcText: props.srcText,
       srcLang: source,
       // 如果指定语言, 使用指定语言; 发生冲突且允许自动切换时, 选择优先级最高的符合条件的选项; 如果所有选项都不可用, 用当前目标语言作为兜底.
-      dstLang: props.dstLang ?? ((globalProps.autoSwitchDstLang && (source === dstLang || source === 'auto' && detect === dstLang))
+      dstLang: props.dstLang ?? ((globalProps.autoSwitchDstLang && (source === dstLang || source === "auto" && detect === dstLang))
         && intersection(globalProps.languagePreferences, getSupportsByService(serviceKey, srcLang)).find(item => item !== dstLang)
         || dstLang)
     }
@@ -51,13 +61,14 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
     putRecord(translateProps.srcText)
     setLoading(true)
     try {
-      const result = await throttledTranslate.current(translateProps, serviceProps?.authData ?? {});
+      const result = await throttledTranslate.current(translateProps, serviceProps.authData ?? {});
       setDetLang(result.detLang || "");
       setDstText(result.dstText);
       setErrText(result.errText || "");
       return result;
     } finally {
       setLoading(false);
+      setServiceProps({ ...serviceProps, usage: serviceProps.usage + props.srcText.length });
     }
   }
 
@@ -85,6 +96,11 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
       Message.error(`复制失败 ${err}`)
     })
   }
+
+  useEffect(() => serviceProps.reset
+      ? execMonthly(1, time => setServiceProps({ ...serviceProps, usage: 0, lastReset: time }), serviceProps.lastReset)
+      : () => null
+    , [serviceProps])
 
   useSubscription(enable ? {
     dstTextCamelCaseCopy: () => dstTextCopy(text => text.replace(/[-_ ]+(.)/g, (_, c) => c.toUpperCase()).replace(/^[A-Z]/, c => c.toLowerCase())),
