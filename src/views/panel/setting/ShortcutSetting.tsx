@@ -1,13 +1,14 @@
 import { Fragment, useRef, useState } from "react";
-import { useRecoilState } from "recoil";
 import { Chip, List, ListItem, ListItemText, ListSubheader } from "@mui/material";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 import { allActions } from "/src/plugins/action";
-import { actionKeybindingMapState } from "/src/store/action";
+import { useActionKeybindingMap, useKeybindingStore } from "/src/store/action";
 import KeybindingDialog, { KeybindingDialogExposed } from "/src/components/KeybindingDialog";
 
 const ShortcutSetting = () => {
-  const [actionKeybindingMap, setActionKeybindingMap] = useRecoilState(actionKeybindingMapState)
+  const actionKeybindingMap = useActionKeybindingMap()
+  const setActionKeybindingMap = useKeybindingStore(state => state.setKeybinding)
+
   const [actionKey, setActionKey] = useState<string | false>(false)
 
   const putKeybindingProp = (keybinding: string, actionKey: string) => {
@@ -15,7 +16,6 @@ const ShortcutSetting = () => {
     _actionKeybindingMap[actionKey] = keybinding
     setActionKeybindingMap(_actionKeybindingMap)
   }
-
 
   const ref = useRef<KeybindingDialogExposed>(null)
   const openKeybindingDialog = (actionKey: string) => {

@@ -1,11 +1,10 @@
 import { ReactNode, useMemo, useRef, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
 import { Box, ClickAwayListener, Fade, Grid, List, ListItemButton, Paper, Popper, Tab, Tabs } from "@mui/material";
 import languages, { getChineseByKey, getSupportsByService } from "/src/plugins/language";
 import { useSubscription } from "/src/plugins/action";
-import { languageCurrentState, languageDetectState, languageRecordsReadonlyState } from "/src/store/language.ts";
-import { currentServiceKeyState } from "/src/store/service.ts";
-import { globalPropsState } from "/src/store/global.ts";
+import { useLanguageCurrent, useLanguageRecordsReadonly, useLanguageStore } from "/src/store/language.ts";
+import { useCurrentServiceKey } from "/src/store/service.ts";
+import { useGlobalStore } from "/src/store/global.ts";
 import { onEscape } from "/src/util/keyboard.ts";
 import { loopGet } from "/src/util/array.ts";
 import ExpandMore from "/src/components/ExpandMore.tsx";
@@ -35,13 +34,12 @@ interface LanguageTabsProps extends LanguagesOptionsProps {
 }
 
 const LanguageSelector = ({ onChange }: LanguageSelectorProps) => {
-  const serviceKey = useRecoilValue(currentServiceKeyState)
+  const serviceKey = useCurrentServiceKey()
   const [endpoint, setEndpoint] = useState<EndpointType | false>(false)
-
-  const [srcLang, setSrcLang] = useRecoilState(languageCurrentState("src"))
-  const [dstLang, setDstLang] = useRecoilState(languageCurrentState("dst"))
-  const detLang = useRecoilValue(languageDetectState)
-  const [globalProps, setGlobalProps] = useRecoilState(globalPropsState)
+  const [srcLang, setSrcLang] = useLanguageCurrent("src")
+  const [dstLang, setDstLang] = useLanguageCurrent("dst")
+  const { languageDetect } = useLanguageStore();
+  const { setGlobalProps, ...globalProps } = useGlobalStore();
 
   const srcSupports = getSupportsByService(serviceKey)
   const dstSupports = getSupportsByService(serviceKey, srcLang === "auto" ? "" : srcLang)
@@ -67,7 +65,7 @@ const LanguageSelector = ({ onChange }: LanguageSelectorProps) => {
     "src": <LanguagesOptions value={srcLang} supports={srcSupports} onClick={handleSrcClick} onExpand={setEndpoint} />,
     "dst": <LanguagesOptions value={dstLang} supports={dstSupports} onClick={handleDstClick} onExpand={setEndpoint} />
   }[endpoint]}>
-    <LanguageTabs endpoint="src" auto det={detLang} supports={srcSupports}
+    <LanguageTabs endpoint="src" auto det={languageDetect} supports={srcSupports}
       value={srcLang} onClick={handleSrcClick}
       expand={endpoint} onExpand={setEndpoint} />
     <LanguageTabs endpoint="dst" supports={dstSupports}
@@ -89,10 +87,10 @@ const LanguageContainer = ({ children: [source, target], proper, open, onClose }
   return <ClickAwayListener onClickAway={() => onClose?.()}>
     <Box onKeyDown={onEscape(onClose)}>
       <Grid ref={popoverTargetRef} container>
-        <Grid item xs={6}>
+        <Grid size={6}>
           {source}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           {target}
         </Grid>
       </Grid>
@@ -110,7 +108,7 @@ const LanguageContainer = ({ children: [source, target], proper, open, onClose }
 
 const LanguageTabs = ({ value, supports, onClick, onExpand, endpoint, expand, auto, det, lock }: LanguageTabsProps) => {
   // 组件内缓存一份语言使用记录, 当在最近使用(缓存已有)的语言内切换时, 不修改组件顺序
-  const languageRecords = useRecoilValue(languageRecordsReadonlyState(endpoint))
+  const languageRecords = useLanguageRecordsReadonly(endpoint)
   const [languageCaches, setLanguageCaches] = useState(auto ? ["auto", ...languageRecords] : languageRecords)
 
   const getLabel = (langKey: string) => {

@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useRecoilState } from "recoil";
 import { Box, Card, CardContent, Checkbox, Grid, InputAdornment, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { serviceModules } from "/src/plugins/service";
-import { servicePropsState } from "/src/store/service";
+import { useServiceProps, useServiceStore } from "/src/store/service";
 import { GppGoodOutlined, RepeatOneSharp, RepeatSharp, ShieldOutlined } from "@mui/icons-material";
 
 interface ServiceItemProps {
@@ -11,12 +10,13 @@ interface ServiceItemProps {
 }
 
 const ServiceItem = ({ serviceKey, serviceModule: { name, authProps } }: ServiceItemProps) => {
-  const [serviceProps, setServiceProps] = useRecoilState(servicePropsState(serviceKey))
+  const serviceProps = useServiceProps(serviceKey)
+  const setServiceProps = useServiceStore(state => state.setService)
   if (!serviceProps) {
     return null
   }
 
-  const updatePartial = (value: Partial<ServiceProps>) => setServiceProps(Object.assign({}, serviceProps, value))
+  const updatePartial = (value: Partial<ServiceProps>) => setServiceProps(serviceKey, Object.assign({}, serviceProps, value))
 
   const [auth, setAuth] = useState<AuthData>(serviceProps.authData ?? {})
   const [limit, setLimit] = useState<number>(serviceProps.limit ?? 0)
@@ -44,30 +44,34 @@ const ServiceItem = ({ serviceKey, serviceModule: { name, authProps } }: Service
       />)}
 
       <Grid container spacing={1}>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <TextField label="限制字符数" value={limit} type="number" variant="standard" fullWidth
             onChange={e => setLimit(Number(e.target.value))} onBlur={() => updatePartial({ limit: limit })}
             disabled={!serviceProps.enable || !serviceProps.block}
-            InputProps={{
-              startAdornment: <Tooltip title={serviceProps.block ? "字符超出时阻止请求" : "字符超出时什么都不做"}>
-                <Checkbox checked={serviceProps.block} icon={<ShieldOutlined />} checkedIcon={<GppGoodOutlined />}
-                  onChange={e => updatePartial({ block: e.target.checked })}
-                  disabled={!serviceProps.enable} />
-              </Tooltip>,
-              endAdornment: <InputAdornment position="end">字符</InputAdornment>,
+            slotProps={{
+              input: {
+                startAdornment: <Tooltip title={serviceProps.block ? "字符超出时阻止请求" : "字符超出时什么都不做"}>
+                  <Checkbox checked={serviceProps.block} icon={<ShieldOutlined />} checkedIcon={<GppGoodOutlined />}
+                    onChange={e => updatePartial({ block: e.target.checked })}
+                    disabled={!serviceProps.enable} />
+                </Tooltip>,
+                endAdornment: <InputAdornment position="end">字符</InputAdornment>,
+              }
             }} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <TextField label="已用字符数" value={usage} type="number" variant="standard" fullWidth
             onChange={e => setUsage(Number(e.target.value))} onBlur={() => updatePartial({ usage: usage })}
             disabled={!serviceProps.enable}
-            InputProps={{
-              startAdornment: <Tooltip title={serviceProps.reset ? "月初自动重置" : "保持使用字符数不变"}>
-                <Checkbox checked={serviceProps.reset} icon={<RepeatSharp />} checkedIcon={<RepeatOneSharp />}
-                  onChange={e => updatePartial({ reset: e.target.checked })}
-                  disabled={!serviceProps.enable} />
-              </Tooltip>,
-              endAdornment: <InputAdornment position="end">字符</InputAdornment>,
+            slotProps={{
+              input: {
+                startAdornment: <Tooltip title={serviceProps.reset ? "月初自动重置" : "保持使用字符数不变"}>
+                  <Checkbox checked={serviceProps.reset} icon={<RepeatSharp />} checkedIcon={<RepeatOneSharp />}
+                    onChange={e => updatePartial({ reset: e.target.checked })}
+                    disabled={!serviceProps.enable} />
+                </Tooltip>,
+                endAdornment: <InputAdornment position="end">字符</InputAdornment>,
+              }
             }} />
         </Grid>
       </Grid>

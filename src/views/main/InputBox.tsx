@@ -41,7 +41,7 @@ const InputBox = ({ value, limit = 1000, wait = 550, onChange, onDebounced, ...p
   })
 
   return <>
-    <TextField {...props} inputRef={inputRef} value={value} inputProps={{ maxLength: limit }} onChange={event => handleChange(event.target.value)} />
+    <TextField {...props} inputRef={inputRef} value={value} slotProps={{ htmlInput: { maxLength: limit } }} onChange={event => handleChange(event.target.value)} />
     <FormHelperText sx={{ textAlign: "right" }}>{value?.length.toLocaleString()} / {limit.toLocaleString()}</FormHelperText>
   </>
 }

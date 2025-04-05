@@ -1,5 +1,5 @@
-import { atom, DefaultValue, selector } from "recoil";
-import persistence from "/src/util/persistence.ts";
+import { create } from "zustand";
+import { combine, createJSONStorage, persist } from "zustand/middleware";
 
 export interface GlobalProps {
   // 自动翻译
@@ -22,17 +22,6 @@ const initProps = {
   historyRecordCount: 100,
 }
 
-const globalState = atom<GlobalProps>({
-  key: "globalState",
-  default: initProps,
-  effects: [persistence("global")]
-})
-
-export const globalPropsState = selector<GlobalProps>({
-  key: "globalPropsState",
-  get: ({ get }) => ({ ...initProps, ...get(globalState) }),
-  set: ({ get, set }, props) => {
-    if ((props instanceof DefaultValue) || !props) return
-    set(globalState, { ...get(globalState), ...props })
-  }
-})
+export const useGlobalStore = create(persist(combine(initProps, (set) => ({
+  setGlobalProps: (newProps: Partial<GlobalProps>) => set((state) => ({ ...state, ...newProps })),
+})), { name: "global", storage: createJSONStorage(() => localStorage) }));

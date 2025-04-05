@@ -1,6 +1,6 @@
-import { assign, invert, pick } from "lodash";
-import { atom, DefaultValue, selector } from "recoil";
-import persistence from "/src/util/persistence.ts";
+import { create } from "zustand";
+import { combine, createJSONStorage, persist } from "zustand/middleware";
+import { invert, pick } from "lodash";
 import { allActions } from "/src/plugins/action";
 
 export interface ActionKeybinding {
@@ -12,30 +12,22 @@ const dftList = allActions
   .flatMap(group => group.actions)
   .map(({ key, preset }) => ({ action: key, keybinding: preset }))
 
-const actionKeybindingListState = atom<Array<ActionKeybinding>>({
-  key: "actionKeybindingListState",
-  default: dftList,
-  effects: [persistence("keybinding")]
-})
+export const useKeybindingStore = create(persist(combine({ actionKeybindingList: dftList }, (set) => ({
+  setKeybinding: (by: Record<string, string>) => set((state) => ({
+    actionKeybindingList: state.actionKeybindingList.map(item =>
+      Object.prototype.hasOwnProperty.call(by, item.action) ? { ...item, keybinding: by[item.action] } : item
+    ),
+  })),
+})), { name: "keybinding", storage: createJSONStorage(() => localStorage) }));
 
-export const actionKeybindingMapState = selector<Record<string, string>>({
-  key: "actionKeybindingMapState",
-  get: ({ get }) => {
-    const dftMap = Object.fromEntries(dftList.map(item => [item.action, item.keybinding]))
-    const stoMap = Object.fromEntries(get(actionKeybindingListState).map(item => [item.action, item.keybinding]))
-    return assign({}, dftMap, pick(stoMap, Object.keys(dftMap)))
-  },
-  set: ({ set, get }, newValue) => {
-    if ((newValue instanceof DefaultValue) || !newValue) return
-    const updatedList = get(actionKeybindingListState).map(item => Object.prototype.hasOwnProperty.call(newValue, item.action)
-      ? { ...item, keybinding: newValue[item.action] }
-      : item
-    )
-    set(actionKeybindingListState, updatedList)
-  },
-})
+export const useActionKeybindingMap = () => {
+  const { actionKeybindingList } = useKeybindingStore(state => state);
+  const dftMap = Object.fromEntries(dftList.map(item => [item.action, item.keybinding]));
+  const stoMap = Object.fromEntries(actionKeybindingList.map(item => [item.action, item.keybinding]));
+  return { ...dftMap, ...pick(stoMap, Object.keys(dftMap)) };
+};
 
-export const keybindingActionMapState = selector<Record<string, string>>({
-  key: "keybindingActionMapState",
-  get: ({ get }) => invert(get(actionKeybindingMapState)),
-})
+export const useKeybindingActionMap = () => {
+  const actionKeybindingMap = useActionKeybindingMap();
+  return invert(actionKeybindingMap);
+};

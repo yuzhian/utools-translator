@@ -1,9 +1,8 @@
 import { createRef, RefObject, useRef, useState } from "react";
-import { useRecoilValue } from "recoil";
 import { useShortcutEmit, useSubscription } from "/src/plugins/action";
-import { currentServiceKeyState, enabledServiceKeysState } from "/src/store/service.ts";
-import { keybindingActionMapState } from "/src/store/action.ts";
-import { globalPropsState } from "/src/store/global.ts";
+import { useCurrentServiceKey, useEnabledServiceKeys } from "/src/store/service.ts";
+import { useKeybindingActionMap } from "/src/store/action.ts";
+import { useGlobalStore } from "/src/store/global.ts";
 import InputBox from "/src/views/main/InputBox.tsx";
 import MainContainer from "/src/views/main/MainContainer.tsx";
 import TranslateService from "/src/views/main/TranslateService.tsx";
@@ -18,15 +17,16 @@ import ServiceSetting from "/src/views/panel/setting/ServiceSetting.tsx";
 import ShortcutSetting from "/src/views/panel/setting/ShortcutSetting.tsx";
 
 const App = () => {
-  const currentServiceKey = useRecoilValue(currentServiceKeyState)
-  const enabledServiceKeys = useRecoilValue(enabledServiceKeysState)
-  const globalProps = useRecoilValue(globalPropsState)
-  const keybindingActionMap = useRecoilValue(keybindingActionMapState)
+  const currentServiceKey = useCurrentServiceKey()
+  const enabledServiceKeys = useEnabledServiceKeys()
+  const { autoTranslate, inputDebounceWait } = useGlobalStore();
+  const keybindingActionMap = useKeybindingActionMap()
 
   const [srcText, setSrcText] = useState("")
 
   const componentHubRef = useRef<ComponentHubExposed>(null)
-  const serviceRefs = useRef<Record<string, RefObject<ServiceComponent>>>(
+
+  const serviceRefs = useRef<Record<string, RefObject<ServiceComponent | null>>>(
     Object.fromEntries(enabledServiceKeys.map((serviceKey) => [serviceKey, createRef()]))
   )
 
@@ -46,7 +46,7 @@ const App = () => {
     if (type !== "over") return
     updateSrcText(payload).then(src => {
       componentHubRef.current?.setActive(false)
-      globalProps.autoTranslate && translate(src)
+      autoTranslate && translate(src)
     })
   })
 
@@ -60,24 +60,24 @@ const App = () => {
   return <>
     <SelectorBar position="relative" elevation={0} sx={{ bgcolor: "background.default" }}>
       {/* 服务切换 */}
-      <ServiceSelector onChange={(value) => globalProps.autoTranslate && translate({}, value)} />
+      <ServiceSelector onChange={(value) => autoTranslate && translate({}, value)} />
       {/* 语言切换 */}
-      <LanguageSelector onChange={(value) => globalProps.autoTranslate && translate(value)} />
+      <LanguageSelector onChange={(value) => autoTranslate && translate(value)} />
     </SelectorBar>
 
     <MainContainer spacing={1} p={1} mt={0} maxHeight="calc(100vh - 144px)" overflow="auto">
       {/* 左侧输入框, 防抖后执行翻译 */}
-      <InputBox value={srcText} wait={globalProps.inputDebounceWait} limit={5000} fullWidth multiline minRows={10} size="small"
+      <InputBox value={srcText} wait={inputDebounceWait} limit={5000} fullWidth multiline minRows={10} size="small"
         onChange={value => setSrcText(value)}
-        onDebounced={value => globalProps.autoTranslate && translate({ srcText: value })}
+        onDebounced={value => autoTranslate && translate({ srcText: value })}
       />
       {/* 右侧结果框, 一组服务组件, 显示当前匹配的服务. 提供了翻译函数 */}
       {enabledServiceKeys.map(serviceKey => (
         <TranslateService ref={serviceRefs.current[serviceKey]} key={serviceKey} serviceKey={serviceKey} delay={1000} variant="outlined"
           enable={serviceKey === currentServiceKey} sx={{
-          p: 1, minHeight: "calc(100% - 1.5rem)", wordWrap: "break-word", whiteSpace: "pre-line",
-          position: "relative", display: serviceKey === currentServiceKey ? "block" : "none"
-        }} />
+            p: 1, minHeight: "calc(100% - 1.5rem)", wordWrap: "break-word", whiteSpace: "pre-line",
+            position: "relative", display: serviceKey === currentServiceKey ? "block" : "none"
+          }} />
       ))}
     </MainContainer>
 

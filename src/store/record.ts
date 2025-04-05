@@ -1,18 +1,11 @@
-import { atom, DefaultValue, selector } from "recoil";
-import persistence from "/src/util/persistence.ts";
+import { create } from "zustand";
+import { combine, createJSONStorage, persist } from "zustand/middleware";
 
-
-export const recordsState = atom<Array<string>>({
-  key: "recordsState",
-  default: [],
-  effects: [persistence("records")]
-})
-
-export const recordState = selector<string>({
-  key: "recordState",
-  get: ({ get }) => get(recordsState)[0],
-  set: ({ get, set }, record) => {
-    if ((record instanceof DefaultValue) || !record) return
-    set(recordsState, [record].concat(get(recordsState).filter(item => !record.includes(item))))
-  }
-})
+export const useRecordStore = create(persist(combine({ records: [] as string[] }, (set) => ({
+  addRecord: (by: string) => set((state) => ({
+    records: [by].concat(state.records.filter((item) => !by.includes(item))),
+  })),
+  removeRecord: (by: number) => set((state) => ({
+    records: state.records.filter((_, i) => i !== by),
+  }))
+})), { name: "records", storage: createJSONStorage(() => localStorage) }));

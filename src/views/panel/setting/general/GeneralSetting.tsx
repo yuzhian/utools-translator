@@ -1,11 +1,10 @@
-import { useRecoilState } from "recoil";
 import { List, ListSubheader, Switch, TextField } from "@mui/material";
-import { GlobalProps, globalPropsState } from "/src/store/global";
+import { GlobalProps, useGlobalStore } from "/src/store/global";
 import SettingItem from "./SettingItem.tsx";
 import { PreferencesOptional, PreferencesSelected } from "/src/views/panel/setting/general/PreferencesSetting.tsx";
 
 const GeneralSetting = () => {
-  const [globalProps, setGlobalProps] = useRecoilState(globalPropsState)
+  const { setGlobalProps, ...globalProps } = useGlobalStore();
   const updatePartial = (props: Partial<GlobalProps>) => {
     setGlobalProps({ ...globalProps, ...props })
   }
