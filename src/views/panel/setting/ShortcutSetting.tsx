@@ -1,13 +1,13 @@
 import { Fragment, useRef, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useAtom } from "jotai";
 import { Chip, List, ListItem, ListItemText, ListSubheader } from "@mui/material";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 import { allActions } from "/src/plugins/action";
-import { actionKeybindingMapState } from "/src/store/action";
+import { actionsAtom } from "/src/store/keybinding";
 import KeybindingDialog, { KeybindingDialogExposed } from "/src/components/KeybindingDialog";
 
 const ShortcutSetting = () => {
-  const [actionKeybindingMap, setActionKeybindingMap] = useRecoilState(actionKeybindingMapState)
+  const [actionKeybindingMap, setActionKeybindingMap] = useAtom(actionsAtom)
   const [actionKey, setActionKey] = useState<string | false>(false)
 
   const putKeybindingProp = (keybinding: string, actionKey: string) => {

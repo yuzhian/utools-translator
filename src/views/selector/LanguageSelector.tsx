@@ -1,11 +1,11 @@
 import { ReactNode, useMemo, useRef, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useAtom, useAtomValue } from "jotai";
 import { Box, ClickAwayListener, Fade, Grid, List, ListItemButton, Paper, Popper, Tab, Tabs } from "@mui/material";
 import languages, { getChineseByKey, getSupportsByService } from "/src/plugins/language";
 import { useSubscription } from "/src/plugins/action";
-import { languageCurrentState, languageDetectState, languageRecordsReadonlyState } from "/src/store/language.ts";
-import { currentServiceKeyState } from "/src/store/service.ts";
-import { globalPropsState } from "/src/store/global.ts";
+import { currentLanguageFamily, detectLanguageAtom, languagesFamily } from "/src/store/language.ts";
+import { currentServiceKeyAtom } from "/src/store/service.ts";
+import { generalAtom } from "/src/store/general.ts";
 import { onEscape } from "/src/util/keyboard.ts";
 import { loopGet } from "/src/util/array.ts";
 import ExpandMore from "/src/components/ExpandMore.tsx";
@@ -35,13 +35,13 @@ interface LanguageTabsProps extends LanguagesOptionsProps {
 }
 
 const LanguageSelector = ({ onChange }: LanguageSelectorProps) => {
-  const serviceKey = useRecoilValue(currentServiceKeyState)
+  const serviceKey = useAtomValue(currentServiceKeyAtom)
   const [endpoint, setEndpoint] = useState<EndpointType | false>(false)
 
-  const [srcLang, setSrcLang] = useRecoilState(languageCurrentState("src"))
-  const [dstLang, setDstLang] = useRecoilState(languageCurrentState("dst"))
-  const detLang = useRecoilValue(languageDetectState)
-  const [globalProps, setGlobalProps] = useRecoilState(globalPropsState)
+  const [srcLang, setSrcLang] = useAtom(currentLanguageFamily("src"))
+  const [dstLang, setDstLang] = useAtom(currentLanguageFamily("dst"))
+  const detLang = useAtomValue(detectLanguageAtom)
+  const [general, setGeneral] = useAtom(generalAtom)
 
   const srcSupports = getSupportsByService(serviceKey)
   const dstSupports = getSupportsByService(serviceKey, srcLang === "auto" ? "" : srcLang)
@@ -56,7 +56,7 @@ const LanguageSelector = ({ onChange }: LanguageSelectorProps) => {
 
   const handleDstClick = (value: string) => {
     if (dstLang === value) {
-      setGlobalProps({ ...globalProps, autoSwitchDstLang: !globalProps.autoSwitchDstLang })
+      setGeneral({ ...general, autoSwitchDstLang: !general.autoSwitchDstLang })
       return
     }
     setDstLang(value)
@@ -71,7 +71,7 @@ const LanguageSelector = ({ onChange }: LanguageSelectorProps) => {
       value={srcLang} onClick={handleSrcClick}
       expand={endpoint} onExpand={setEndpoint} />
     <LanguageTabs endpoint="dst" supports={dstSupports}
-      lock={!globalProps.autoSwitchDstLang}
+      lock={!general.autoSwitchDstLang}
       value={dstLang} onClick={handleDstClick}
       expand={endpoint} onExpand={setEndpoint} />
   </LanguageContainer>
@@ -110,7 +110,7 @@ const LanguageContainer = ({ children: [source, target], proper, open, onClose }
 
 const LanguageTabs = ({ value, supports, onClick, onExpand, endpoint, expand, auto, det, lock }: LanguageTabsProps) => {
   // 组件内缓存一份语言使用记录, 当在最近使用(缓存已有)的语言内切换时, 不修改组件顺序
-  const languageRecords = useRecoilValue(languageRecordsReadonlyState(endpoint))
+  const languageRecords = useAtomValue(languagesFamily(endpoint))
   const [languageCaches, setLanguageCaches] = useState(auto ? ["auto", ...languageRecords] : languageRecords)
 
   const getLabel = (langKey: string) => {
@@ -140,9 +140,9 @@ const LanguageTabs = ({ value, supports, onClick, onExpand, endpoint, expand, au
 
   return <Box display="flex" justifyContent="space-between" alignItems="center">
     <Tabs value={value}>
-      {languageCaches.map(langKey =>
-        <Tab key={langKey} value={langKey} label={getLabel(langKey)} disabled={auto ? false : !supports?.includes(langKey)} onClick={() => onClick?.(langKey)}
-        />)}
+      {languageCaches.map((langKey: string) =>
+        <Tab key={langKey} value={langKey} label={getLabel(langKey)} disabled={auto ? false : !supports?.includes(langKey)} onClick={() => onClick?.(langKey)} />
+      )}
     </Tabs>
     <ExpandMore expand={endpoint === expand} onClick={() => onExpand?.(endpoint === expand ? false : endpoint)} />
   </Box>

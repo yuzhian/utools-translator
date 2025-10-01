@@ -1,28 +1,28 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { intersection } from "lodash";
 import { franc } from "franc";
-import { Alert, Box, CircularProgress, Paper, PaperProps } from "@mui/material";
+import { Alert, Box, CircularProgress, Paper } from "@mui/material";
 import { translate } from "/src/plugins/service";
 import { getSupportsByService } from "/src/plugins/language";
 import { useSubscription } from "/src/plugins/action";
-import { servicePropsState } from "/src/store/service.ts";
-import { globalPropsState } from "/src/store/global.ts";
-import { languageCurrentState, languageDetectState } from "/src/store/language.ts";
-import { recordState } from "/src/store/record.ts";
+import { servicePropsFamily } from "/src/store/service.ts";
+import { generalAtom } from "/src/store/general.ts";
+import { currentLanguageFamily, detectLanguageAtom } from "/src/store/language.ts";
+import { recordAtom } from "/src/store/record.ts";
 import { execMonthly } from "/src/util/timer.ts";
 import throttle from "/src/util/throttle";
 import Message from "/src/components/Message";
 
-interface ServiceComponentProps extends PaperProps {
+interface ServiceComponentProps {
   serviceKey: string
   enable: boolean
   delay?: number // 当前不可改, 需要考虑上次的调用是否完成等情况, 目前情况看, 除了百度有 qps 限制外, 其他服务并无频率限制, 同时 1 秒也是比较合理的间隔, 因此固定即可, 暂不支持自定义
 }
 
-const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ serviceKey, enable, delay = 1000, ...props }, ref) => {
-  const [serviceProps, setServiceProps] = useRecoilState(servicePropsState(serviceKey))
-  const globalProps = useRecoilValue(globalPropsState)
+const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ serviceKey, enable, delay = 1000 }, ref) => {
+  const [serviceProps, setServiceProps] = useAtom(servicePropsFamily(serviceKey))
+  const general = useAtomValue(generalAtom)
   if (!serviceProps) {
     return null
   }
@@ -31,10 +31,10 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
   const [errText, setErrText] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const srcLang = useRecoilValue(languageCurrentState("src"))
-  const [dstLang, setDstLang] = useRecoilState(languageCurrentState("dst"))
-  const setDetLang = useSetRecoilState(languageDetectState)
-  const putRecord = useSetRecoilState(recordState)
+  const srcLang = useAtomValue(currentLanguageFamily("src"))
+  const [dstLang, setDstLang] = useAtom(currentLanguageFamily("dst"))
+  const setDetLang = useSetAtom(detectLanguageAtom)
+  const putRecord = useSetAtom(recordAtom)
 
   // translate-翻译; throttledTranslate-节流翻译; enhancedTranslate-逻辑处理, 检查参数, 转换语言, 历史记录等
   const throttledTranslate = useRef(throttle(translate(serviceKey), delay))
@@ -48,13 +48,13 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
     }
     // 补全参数, 检测语言并根据优先级切换
     const source = props.srcLang ?? srcLang
-    const detect = franc(props.srcText, { minLength: 2, only: globalProps.languagePreferences })
+    const detect = franc(props.srcText, { minLength: 2, only: general.languagePreferences })
     const translateProps = {
       srcText: props.srcText,
       srcLang: source,
       // 如果指定语言, 使用指定语言; 发生冲突且允许自动切换时, 选择优先级最高的符合条件的选项; 如果所有选项都不可用, 用当前目标语言作为兜底.
-      dstLang: props.dstLang ?? ((globalProps.autoSwitchDstLang && (source === dstLang || source === "auto" && detect === dstLang))
-        && intersection(globalProps.languagePreferences, getSupportsByService(serviceKey, srcLang)).find(item => item !== dstLang)
+      dstLang: props.dstLang ?? ((general.autoSwitchDstLang && (source === dstLang || source === "auto" && detect === dstLang))
+        && intersection(general.languagePreferences, getSupportsByService(serviceKey, srcLang)).find(item => item !== dstLang)
         || dstLang)
     }
     setDstLang(translateProps.dstLang)
@@ -65,10 +65,10 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
       setDetLang(result.detLang || "");
       setDstText(result.dstText);
       setErrText(result.errText || "");
+      result.errText || setServiceProps({ ...serviceProps, usage: serviceProps.usage + props.srcText.length })
       return result;
     } finally {
       setLoading(false);
-      setServiceProps({ ...serviceProps, usage: serviceProps.usage + props.srcText.length });
     }
   }
 
@@ -110,14 +110,23 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
     dstTextKebabCaseCopy: () => dstTextCopy(text => text.replace(/[-_ ]+(.)/g, (_, c) => "-" + c.toLowerCase()).replace(/^[A-Z]/, c => c.toLowerCase())),
   } : {})
 
-  return <Paper {...props}>
-    {loading && <Box display="flex" justifyContent="center" alignItems="center" position="absolute" top={0} bottom={0} left={0} right={0} zIndex={1}
-      bgcolor={theme => theme.palette.background.default}>
-      <CircularProgress />
-    </Box>}
-    {errText && <Alert severity="warning">{errText}</Alert>}
-    {dstText}
-  </Paper>
+  return <Box height="100%">
+    <Paper variant="outlined" sx={{
+      position: "relative", p: 1, minHeight: "calc(100% - 1.5rem)",
+      wordWrap: "break-word", whiteSpace: "pre-line"
+    }}>
+      {loading && <Box display="flex" justifyContent="center" alignItems="center"
+                       position="absolute" top={0} bottom={0} left={0} right={0} zIndex={1}
+                       bgcolor={theme => theme.palette.background.default}>
+          <CircularProgress/>
+      </Box>}
+      {errText && <Alert severity="warning">{errText}</Alert>}
+      {dstText}
+    </Paper>
+    <Box textAlign="right" color="rgba(0, 0, 0, 0.6)" fontSize="0.75rem" marginTop="3px">
+      {serviceProps.usage?.toLocaleString()} / {serviceProps.limit?.toLocaleString()}
+    </Box>
+  </Box>
 })
 
 export default TranslateService

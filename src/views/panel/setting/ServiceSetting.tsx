@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useRecoilState } from "recoil";
+import { useAtom } from "jotai";
 import { Box, Card, CardContent, Checkbox, Grid, InputAdornment, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { serviceModules } from "/src/plugins/service";
-import { servicePropsState } from "/src/store/service";
+import { servicePropsFamily } from "/src/store/service";
 import { GppGoodOutlined, RepeatOneSharp, RepeatSharp, ShieldOutlined } from "@mui/icons-material";
 
 interface ServiceItemProps {
@@ -11,7 +11,7 @@ interface ServiceItemProps {
 }
 
 const ServiceItem = ({ serviceKey, serviceModule: { name, authProps } }: ServiceItemProps) => {
-  const [serviceProps, setServiceProps] = useRecoilState(servicePropsState(serviceKey))
+  const [serviceProps, setServiceProps] = useAtom(servicePropsFamily(serviceKey))
   if (!serviceProps) {
     return null
   }

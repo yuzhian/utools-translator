@@ -1,18 +1,13 @@
-import { atom, DefaultValue, selector } from "recoil";
-import persistence from "/src/util/persistence.ts";
+import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import { storage } from "/src/util/storage.ts";
 
+export const recordsAtom = atomWithStorage("records", [], storage<Array<string>>());
 
-export const recordsState = atom<Array<string>>({
-  key: "recordsState",
-  default: [],
-  effects: [persistence("records")]
-})
-
-export const recordState = selector<string>({
-  key: "recordState",
-  get: ({ get }) => get(recordsState)[0],
-  set: ({ get, set }, record) => {
-    if ((record instanceof DefaultValue) || !record) return
-    set(recordsState, [record].concat(get(recordsState).filter(item => !record.includes(item))))
+export const recordAtom = atom(
+  (get) => get(recordsAtom)[0],
+  (get, set, record: string) => {
+    if (!record) return
+    set(recordsAtom, [record].concat(get(recordsAtom).filter(item => !record.includes(item))))
   }
-})
+)

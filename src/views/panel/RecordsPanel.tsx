@@ -1,6 +1,6 @@
-import { useRecoilState } from "recoil";
+import { useAtom } from "jotai";
 import { Box, Chip, Tooltip } from "@mui/material";
-import { recordsState } from "/src/store/record.ts";
+import { recordsAtom } from "/src/store/record.ts";
 
 const TOOLTIP_DELAY = 500
 
@@ -9,7 +9,7 @@ interface RecordsPanelProps {
 }
 
 const RecordsPanel = ({ onClick }: RecordsPanelProps) => {
-  const [records, setRecords] = useRecoilState(recordsState)
+  const [records, setRecords] = useAtom(recordsAtom)
   const handleDelete = (index: number) => setRecords((prevRecords) => prevRecords.filter((_, i) => i !== index))
   return <Box maxWidth="calc(100vw - 32px)">
     {records.map((record, index) => (

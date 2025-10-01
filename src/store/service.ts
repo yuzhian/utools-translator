@@ -1,59 +1,44 @@
-import { atom, DefaultValue, selector, selectorFamily } from "recoil";
-import persistence from "/src/util/persistence.ts";
+import { atom } from "jotai";
+import deepEqual from 'fast-deep-equal'
+import { atomFamily, atomWithStorage } from "jotai/utils";
 import { defaultServiceProps, serviceModules } from "/src/plugins/service";
-import { keyBy, merge, pick } from "lodash";
+import { load, storage } from "/src/util/storage";
 
 /**
  * 服务列表(存储)
  */
-const servicesState = atom<Array<ServiceProps>>({
-  key: "servicesState",
-  default: [],
-  effects: [persistence(`services`)]
-})
+export const servicesStorage = atomWithStorage<ServiceProps[]>("services", load("services", []), storage<ServiceProps[]>())
 
 /**
  * 服务列表
  */
-export const servicePropsListState = selector<Array<ServiceProps>>({
-  key: "servicePropsListState",
-  get: ({ get }) => pickProps(defaultServiceProps, get(servicesState)),
-  set: ({ set }, newValue) => {
-    if ((newValue instanceof DefaultValue) || !newValue) return
-    set(servicesState, newValue)
+export const servicePropsListAtom = atom(
+  (get) => ([
+    // 过滤掉不存在的服务
+    ...get(servicesStorage).filter(props => Object.keys(serviceModules).includes(props.key)),
+    // 补充缺失的服务
+    ...Object.keys(serviceModules).filter(key => !get(servicesStorage).map(props => props.key).includes(key)).map(key => defaultServiceProps(key)),
+  ]),
+  (_get, set, newValue: ServiceProps[]) => {
+    set(servicesStorage, newValue)
   }
-})
+)
 
-export const servicePropsState = selectorFamily<ServiceProps | undefined, string>({
-  key: "servicePropsState",
-  get: (serviceKey) => ({ get }) => get(servicePropsListState).find(({ key }) => key === serviceKey),
-  set: (serviceKey) => ({ set }, newValue) => {
-    if ((newValue instanceof DefaultValue) || !newValue) return
-    set(servicePropsListState, (list) => list.map(props => props.key === serviceKey ? newValue : props))
+export const servicePropsFamily = atomFamily((serviceKey: string) => atom(
+  (get) => get(servicesStorage).find(({ key }) => key === serviceKey) ?? defaultServiceProps(serviceKey),
+  (get, set, newValue: ServiceProps) => {
+    set(servicePropsListAtom, get(servicePropsListAtom).map(props => props.key === serviceKey ? newValue : props))
   }
-})
+), deepEqual)
 
 /**
  * 启用的服务列表(KEY)
  */
-export const enabledServiceKeysState = selector<Array<string>>({
-  key: "enabledServiceKeysState",
-  get: ({ get }) => get(servicePropsListState).filter(({ enable }) => enable).map(({ key }) => key)
-})
+export const enabledServiceKeysAtom = atom(
+  (get) => get(servicePropsListAtom).filter(({ enable }) => enable).map(({ key }) => key)
+)
 
 /**
  * 当前服务(KEY)
  */
-export const currentServiceKeyState = atom<string>({
-  key: "currentServiceKeyState",
-  default: Object.keys(serviceModules)[0],
-  effects: [persistence("service")]
-})
-
-/**
- * 组装配置参数
- */
-function pickProps(dft: ServiceProps[], cfg: ServiceProps[]): Array<ServiceProps> {
-  const cfgMap = keyBy(cfg, "key")
-  return dft.map(item => (pick(merge({}, item, cfgMap[item.key]), Object.keys(item)) as ServiceProps))
-}
+export const currentServiceKeyAtom = atomWithStorage("service", load("service", Object.keys(serviceModules)[0]), storage<string>())

@@ -1,5 +1,5 @@
 import { SyntheticEvent } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useAtom, useAtomValue } from "jotai";
 import { closestCenter, DndContext, DragEndEvent, PointerSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, horizontalListSortingStrategy, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -7,7 +7,7 @@ import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { Tab, TabProps, Tabs } from "@mui/material";
 import { serviceModules } from "/src/plugins/service";
 import { useSubscription } from "/src/plugins/action";
-import { currentServiceKeyState, enabledServiceKeysState, servicePropsListState } from "/src/store/service.ts";
+import { currentServiceKeyAtom, enabledServiceKeysAtom, servicePropsListAtom } from "/src/store/service.ts";
 import { loopGet } from "/src/util/array.ts";
 
 interface ServiceSelectorProps {
@@ -15,9 +15,9 @@ interface ServiceSelectorProps {
 }
 
 const ServiceSelector = ({ onChange }: ServiceSelectorProps) => {
-  const enabledServiceKeys = useRecoilValue(enabledServiceKeysState)
-  const [servicePropsList, setServicePropsList] = useRecoilState(servicePropsListState)
-  const [currentServiceKey, setCurrentServiceKey] = useRecoilState(currentServiceKeyState)
+  const enabledServiceKeys = useAtomValue(enabledServiceKeysAtom)
+  const [servicePropsList, setServicePropsList] = useAtom(servicePropsListAtom)
+  const [currentServiceKey, setCurrentServiceKey] = useAtom(currentServiceKeyAtom)
   const handleServiceKeyChange = (_: SyntheticEvent, value: string) => {
     setCurrentServiceKey(value)
     onChange?.(value)
@@ -33,7 +33,7 @@ const ServiceSelector = ({ onChange }: ServiceSelectorProps) => {
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return
     const index = (id: UniqueIdentifier) => servicePropsList.findIndex(({ key }) => id === key)
-    setServicePropsList(formItem => arrayMove(formItem, index(active.id), index(over.id)))
+    setServicePropsList(arrayMove(servicePropsList, index(active.id), index(over.id)))
   }
 
   const TabItem = (props: TabProps) => {
