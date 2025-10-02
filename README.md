@@ -31,10 +31,15 @@
 
 在 uTools 插件市场搜索 "翻译聚合"
 
-### 快捷调用
+### 使用方式
 
 - 关键词触发：输入 `翻译` 或 2-5000 个字符直接翻译
 - OCR 文字识别：通过图片文字识别进入翻译模式
+
+### 截图
+
+![home](./screenshots/home.png)
+![keybinding](./screenshots/keybinding.png)
 
 ## 本地开发
 
