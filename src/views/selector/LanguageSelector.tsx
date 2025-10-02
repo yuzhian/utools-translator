@@ -89,10 +89,10 @@ const LanguageContainer = ({ children: [source, target], proper, open, onClose }
   return <ClickAwayListener onClickAway={() => onClose?.()}>
     <Box onKeyDown={onEscape(onClose)}>
       <Grid ref={popoverTargetRef} container>
-        <Grid item xs={6}>
+        <Grid size={6}>
           {source}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           {target}
         </Grid>
       </Grid>

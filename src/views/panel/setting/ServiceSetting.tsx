@@ -12,15 +12,14 @@ interface ServiceItemProps {
 
 const ServiceItem = ({ serviceKey, serviceModule: { name, authProps } }: ServiceItemProps) => {
   const [serviceProps, setServiceProps] = useAtom(servicePropsFamily(serviceKey))
-  if (!serviceProps) {
-    return null
-  }
-
-  const updatePartial = (value: Partial<ServiceProps>) => setServiceProps(Object.assign({}, serviceProps, value))
-
   const [auth, setAuth] = useState<AuthData>(serviceProps.authData ?? {})
   const [limit, setLimit] = useState<number>(serviceProps.limit ?? 0)
   const [usage, setUsage] = useState<number>(serviceProps.usage ?? 0)
+  const updatePartial = (value: Partial<ServiceProps>) => setServiceProps(Object.assign({}, serviceProps, value))
+
+  if (!serviceProps) {
+    return null
+  }
 
   return <Card variant="outlined" sx={{ m: 1 }}>
     <CardContent sx={{ '& .MuiTextField-root': { my: 1 } }}>
@@ -44,7 +43,7 @@ const ServiceItem = ({ serviceKey, serviceModule: { name, authProps } }: Service
       />)}
 
       <Grid container spacing={1}>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <TextField label="限制字符数" value={limit} type="number" variant="standard" fullWidth
             onChange={e => setLimit(Number(e.target.value))} onBlur={() => updatePartial({ limit: limit })}
             disabled={!serviceProps.enable || !serviceProps.block}
@@ -57,7 +56,7 @@ const ServiceItem = ({ serviceKey, serviceModule: { name, authProps } }: Service
               endAdornment: <InputAdornment position="end">字符</InputAdornment>,
             }} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <TextField label="已用字符数" value={usage} type="number" variant="standard" fullWidth
             onChange={e => setUsage(Number(e.target.value))} onBlur={() => updatePartial({ usage: usage })}
             disabled={!serviceProps.enable}
