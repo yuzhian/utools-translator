@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { tinykeys } from "tinykeys";
 import mitt, { EventType, Handler } from "mitt";
-import { mapValues } from "lodash";
+import { mapValues } from "es-toolkit";
 
 // 全部的事件项目
 export { allActions } from "./configuration.ts";

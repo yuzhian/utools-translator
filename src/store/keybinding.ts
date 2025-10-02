@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { assign, invert, pick } from "lodash";
+import { invert, pick } from "es-toolkit";
 import { atomWithStorage } from "jotai/utils";
 import { storage } from "/src/util/storage";
 import { allActions } from "/src/plugins/action";
@@ -22,7 +22,7 @@ export const actionsAtom = atom(
   (get) => {
     const dftMap = Object.fromEntries(defaultActionKeybindingList.map(item => [item.action, item.keybinding]))
     const stoMap = Object.fromEntries(get(keybindingStorage).map(item => [item.action, item.keybinding]))
-    return assign({}, dftMap, pick(stoMap, Object.keys(dftMap)))
+    return Object.assign({}, dftMap, pick(stoMap, Object.keys(dftMap)))
   },
   (get, set, newValue: Record<string, string>) => {
     if (!newValue) return

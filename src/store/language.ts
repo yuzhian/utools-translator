@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { uniq } from "lodash";
+import { uniq } from "es-toolkit";
 import deepEqual from 'fast-deep-equal'
 import { atomFamily, atomWithStorage } from "jotai/utils";
 import { load, storage } from "/src/util/storage.ts";

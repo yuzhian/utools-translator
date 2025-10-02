@@ -19,9 +19,9 @@
     "@mui/material": "^7.3.3",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.18",
+    "es-toolkit": "^1.39.10",
     "franc": "^6.2.0",
     "jotai": "^2.15.0",
-    "lodash": "^4.17.21",
     "mitt": "^3.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -30,7 +30,6 @@
   "devDependencies": {
     "@rollup/plugin-dsv": "^3.0.5",
     "@types/crypto-js": "^4.2.2",
-    "@types/lodash": "^4.17.20",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@typescript-eslint/eslint-plugin": "^8.45.0",

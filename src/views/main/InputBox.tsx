@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { debounce } from "lodash";
+import { debounce } from "es-toolkit";
 import { FormHelperText, TextField, TextFieldProps } from "@mui/material";
 import { useSubscription } from "/src/plugins/action";
 import { extractComment } from "/src/util/text.ts";

@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { intersection } from "lodash";
+import { intersection } from "es-toolkit";
 import { franc } from "franc";
 import { Alert, Box, CircularProgress, Paper } from "@mui/material";
 import { translate } from "/src/plugins/service";

@@ -1,5 +1,5 @@
 import languagesCsv from "./languages.csv";
-import { mapKeys } from "lodash";
+import { keyBy } from "es-toolkit";
 
 // 语言列表: [ { key: "cmn", chinese: "中文", english: "Mandarin Chinese", youdao: "zh-CHS", tencent: "zh|eng,..." }, ... ]
 export default languagesCsv
@@ -10,11 +10,11 @@ const commonColumns = ["key", "scope", "type", "chinese", "english"]
 const serviceColumns = Object.keys(languagesCsv[0]).filter(column => !commonColumns.includes(column))
 
 // key-LanguageCsvInfo: { "cmn": { key: "cmn", chinese: "中文", english: "Mandarin Chinese", youdao: "zh-CHS", tencent: "zh|eng,..." }, ... }
-const keyMap = mapKeys(languagesCsv, ({ key }) => key)
+const keyMap = keyBy(languagesCsv, (item) => item.key)
 
 // service-code-LanguageCsvInfo: { "youdao": { "zh-CHS": { key: "cmn", chinese: "中文", english: "Mandarin Chinese", youdao: "zh-CHS", tencent: "zh|eng,..." }, ... }, ...
 const serviceCodeKeyMap = Object.fromEntries(serviceColumns.map(serviceKey => [
-  serviceKey, mapKeys(languagesCsv.filter(item => item[serviceKey]), ({ [serviceKey]: v }) => v.split("|")[0])
+  serviceKey, keyBy(languagesCsv.filter(item => item[serviceKey]), ({ [serviceKey]: v }) => v.split("|")[0])
 ]))
 
 /**
