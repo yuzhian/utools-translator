@@ -1,7 +1,4 @@
-type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
-
-
-export default function throttle<F extends (...args: Array<any>) => Promise<any>>(promiseFn: F, delay: number) {
+export default function throttle<Args extends unknown[], R>(promiseFn: (...args: Args) => Promise<R>, delay: number) {
   // 用于标记当前是否有函数正在执行
   let isExecuting = false
   // 上一个函数执行完毕的时间
@@ -9,12 +6,12 @@ export default function throttle<F extends (...args: Array<any>) => Promise<any>
   // 延迟执行器的id
   let timeoutId: number | undefined
 
-  return function (...args: Parameters<F>) {
-    return new Promise<UnwrapPromise<ReturnType<F>>>((resolve) => {
-      function createTimeout(func: F, params: Parameters<F>) {
+  return function(...args: Args) {
+    return new Promise<R>((resolve) => {
+      function createTimeout(func: (...args: Args) => Promise<R>, params: Args) {
         // 同时多个请求进入, 清除上一个请求的定时器, 保证只有最后一个请求的定时器生效
         clearTimeout(timeoutId)
-        return setTimeout(async () => {
+        return setTimeout(async() => {
           isExecuting = true
           const result = await func(...params).finally(() => {
             lastExecTime = Date.now()

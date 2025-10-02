@@ -23,10 +23,6 @@ interface ServiceComponentProps {
 const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ serviceKey, enable, delay = 1000 }, ref) => {
   const [serviceProps, setServiceProps] = useAtom(servicePropsFamily(serviceKey))
   const general = useAtomValue(generalAtom)
-  if (!serviceProps) {
-    return null
-  }
-
   const [dstText, setDstText] = useState("")
   const [errText, setErrText] = useState("")
   const [loading, setLoading] = useState(false)
@@ -65,7 +61,9 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
       setDetLang(result.detLang || "");
       setDstText(result.dstText);
       setErrText(result.errText || "");
-      result.errText || setServiceProps({ ...serviceProps, usage: serviceProps.usage + props.srcText.length })
+      if (!result.errText) {
+        setServiceProps({ ...serviceProps, usage: serviceProps.usage + props.srcText.length })
+      }
       return result;
     } finally {
       setLoading(false);
@@ -100,7 +98,7 @@ const TranslateService = forwardRef<ServiceComponent, ServiceComponentProps>(({ 
   useEffect(() => serviceProps.reset
       ? execMonthly(1, time => setServiceProps({ ...serviceProps, usage: 0, lastReset: time }), serviceProps.lastReset)
       : () => null
-    , [serviceProps])
+    , [serviceProps, setServiceProps])
 
   useSubscription(enable ? {
     dstTextCamelCaseCopy: () => dstTextCopy(text => text.replace(/[-_ ]+(.)/g, (_, c) => c.toUpperCase()).replace(/^[A-Z]/, c => c.toLowerCase())),

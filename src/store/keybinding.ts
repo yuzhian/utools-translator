@@ -19,7 +19,7 @@ const keybindingStorage = atomWithStorage("keybinding", defaultActionKeybindingL
 
 // { action: keybinding }
 export const actionsAtom = atom(
-  (get) => {
+  (get): Record<string, string> => {
     const dftMap = Object.fromEntries(defaultActionKeybindingList.map(item => [item.action, item.keybinding]))
     const stoMap = Object.fromEntries(get(keybindingStorage).map(item => [item.action, item.keybinding]))
     return Object.assign({}, dftMap, pick(stoMap, Object.keys(dftMap)))

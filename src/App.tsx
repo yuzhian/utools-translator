@@ -28,7 +28,7 @@ const App = () => {
 
   const componentHubRef = useRef<ComponentHubExposed>(null)
   const serviceRefs = useRef<Record<string, RefObject<ServiceComponent>>>(
-    Object.fromEntries(enabledServiceKeys.map((serviceKey) => [serviceKey, createRef()]))
+    Object.fromEntries(enabledServiceKeys.map((serviceKey) => [serviceKey, createRef<ServiceComponent>()])) as Record<string, RefObject<ServiceComponent>>
   )
 
   // 调用服务翻译
@@ -47,7 +47,9 @@ const App = () => {
     if (type !== "over") return
     updateSrcText(payload).then(src => {
       componentHubRef.current?.setActive(false)
-      general.autoTranslate && translate(src)
+      if (general.autoTranslate) {
+        translate(src)
+      }
     })
   })
 
